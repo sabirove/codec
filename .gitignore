@@ -1,0 +1,16 @@
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+# gradle
+___*/
+___*.gradle
+*-ignored
+logs
+*.log
+target
+build
+out
+.gradle
