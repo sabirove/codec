@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/sabirove/codec.svg?branch=master)](https://travis-ci.org/sabirove/codec)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
 ## Codec utility
 
 - Small library with no external dependencies (apart from `com.google.code.findbugs:jsr305` for API annotations)
@@ -70,9 +73,8 @@ that was used to write the data.
 #### About
 `Codec` is a bidirectional IO function suitable to encode/decode single values and streams of values of the specific
 type operating on top of the `java.io` streams.  
-In this context *coding* means *serialization* of an object of type `<T>` against the `OutputStream`
-and so *decoding* is *deserialization* of such object from the `InputStream` having the contents previously encoded
-by the same Codec.
+In this context, *encoding* an object of type `<T>` means *serializing* it against an `OutputStream`
+and so *decoding* such object means *deserializing* it against an `InputStream` holding the *encoded* contents.
 
 Component-wise, 
 [Codec](src/main/java/sabirove/codec/Codec.java) = [CodecFunction](src/main/java/sabirove/codec/function/CodecFunction.java) +
