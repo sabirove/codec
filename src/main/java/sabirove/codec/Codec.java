@@ -27,7 +27,8 @@ import sabirove.codec.function.CodecFunction;
 import static sabirove.codec.util.CodecUtil.throwUnchecked;
 
 /**
- * Bidirectional IO function suitable to encode/decode values of the specific type. <br>
+ * Bidirectional IO function suitable to encode/decode single values and streams of values
+ * of the specific type operating on top of the {@link java.io} streams.
  *
  * @param <T> target value type
  * @apiNote use {@link #withFunction(CodecFunction)} builder to build an instance.
@@ -121,7 +122,11 @@ public final class Codec<T> {
         /**
          * Specify the codec filter to apply when doing IO with this codec.
          *
-         * @apiNote do not use {@link CodecBufferSpec} as plain codec filter.
+         * @apiNote <ul>
+         * <li>do not use {@link CodecBufferSpec} as plain codec filter</li>
+         * <li>use {@link #withFilterChain(CodecFilter...)} to add more than one filter. Alternatively,
+         * a filter composed with {@link CodecFilter#chain(CodecFilter...)} could be provided.</li>
+         * </ul>
          */
         public Builder<T> withFilter(CodecFilter filter) {
             this.filter = filter;
@@ -129,8 +134,8 @@ public final class Codec<T> {
         }
 
         /**
-         * Specify the codec filter chain (filters applied consequently) when doing IO with this codec.
-         * Composite filters can be obtained with {@link CodecFilter#chain(CodecFilter...)} API.
+         * Specify the codec filter chain (filters applied consequently) to apply
+         * when doing IO with this codec.
          *
          * @apiNote do not use {@link CodecBufferSpec} as part of the filter chain.
          */
@@ -155,7 +160,7 @@ public final class Codec<T> {
         }
 
         public Codec<T> build() {
-            CodecFilter chain = bufferSpec.chain(filter);
+            CodecFilter chain = filter.chain(bufferSpec);
             return new Codec<>(function, chain);
         }
     }
