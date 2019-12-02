@@ -54,10 +54,14 @@ public final class DecoderStream<T> implements AutoCloseable {
      */
     public T readAndClose() {
         try (DecoderStream<T> ds = this) {
-            return read();
+            return ds.read();
         }
     }
 
+    /**
+     * @inheritDoc
+     * @throws UncheckedIOException wrapping the original {@link IOException} when IO operation fails
+     */
     @Override
     public void close() {
         try {

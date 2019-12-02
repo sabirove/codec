@@ -58,7 +58,7 @@ class ShowcaseTest {
     void testCodec() {
         final Codec<Person> personCodec =
                 Codec.withFunction(CodecFunctions.javaSerializing(Person.class))
-                        .withBuffer(CodecBufferSpec.withDefaultSize())
+                        .withBuffer(CodecBufferSpec.ofDefaultSize())
                         .withFilterChain(
                                 CodecFilters.compressWithGzip(),
                                 CodecFilters.encodeWithBase64Url()

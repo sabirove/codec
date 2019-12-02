@@ -63,10 +63,14 @@ public final class EncoderStream<T> implements AutoCloseable, Flushable {
      */
     public void writeAndClose(T value) {
         try (EncoderStream<T> es = this) {
-            write(value);
+            es.write(value);
         }
     }
 
+    /**
+     * @inheritDoc
+     * @throws UncheckedIOException wrapping the original {@link IOException} when IO operation fails
+     */
     @Override
     public void flush() {
         try {
@@ -76,6 +80,10 @@ public final class EncoderStream<T> implements AutoCloseable, Flushable {
         }
     }
 
+    /**
+     * @inheritDoc
+     * @throws UncheckedIOException wrapping the original {@link IOException} when IO operation fails
+     */
     @Override
     public void close() {
         try (OutputStream os = this.os) {

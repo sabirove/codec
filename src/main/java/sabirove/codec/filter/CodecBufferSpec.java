@@ -32,7 +32,7 @@ import static sabirove.codec.util.CodecUtil.checkState;
  * Specialized {@link CodecFilter} implementation that is used by the {@link Codec}
  * instance as the strategy to handle buffering on IO streams.
  *
- * @apiNote do not use when building the codec filter chains: this filter should only be used
+ * @apiNote not intended to be used within as codec filter chains: should only be used
  * to specify the buffering strategy within the {@link Codec.Builder} API.
  */
 public final class CodecBufferSpec extends CodecFilter {
@@ -91,7 +91,7 @@ public final class CodecBufferSpec extends CodecFilter {
      * @param inputBufferSize  input buffer size, in bytes
      * @param outputBufferSize output buffer size, in bytes
      */
-    public static CodecBufferSpec withBuffers(int inputBufferSize, int outputBufferSize) {
+    public static CodecBufferSpec ofSize(int inputBufferSize, int outputBufferSize) {
         checkArgument(inputBufferSize >= 0 && outputBufferSize >= 0,
                 "buffer size should be >= 0 ('0' means buffering is disabled)");
         return new CodecBufferSpec(inputBufferSize, outputBufferSize);
@@ -100,7 +100,7 @@ public final class CodecBufferSpec extends CodecFilter {
     /**
      * Buffering spec with default input/output buffer sizes equal to {@link CodecBufferSpec#DEFAULT_BUFFER_SIZE}.
      */
-    public static CodecBufferSpec withDefaultSize() {
+    public static CodecBufferSpec ofDefaultSize() {
         return DEFAULT_BUFFER_SPEC;
     }
 

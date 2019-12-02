@@ -34,7 +34,7 @@ class CodecTest {
 
     private final Codec<State> codec =
             Codec.withFunction(CodecFunctions.binarySerializing(State::write, State::read))
-                    .withBuffer(CodecBufferSpec.withDefaultSize())
+                    .withBuffer(CodecBufferSpec.ofDefaultSize())
                     .withFilterChain(
                             CodecFilters.encryptWithAes(),
                             CodecFilters.encodeWithBase64Url(),

@@ -30,8 +30,6 @@ import sabirove.codec.util.CodecUtil;
 import static sabirove.codec.util.CodecUtil.checkArgument;
 
 /*
- * AES Codec featuring Galois/Counter (GCM) transformation mode with private 128 bit secret key.
- * specs:
  * - Galois/Counter transformation mode (AES/GCM/NoPadding) - streaming AES with data integrity validation
  * - 128 bit secret key - optimal/recommended key length. We either use random keys per instance or configure the custom one.
  * - 96 bit initialization vector (recommended/optimal) - random value is generated per each encryption

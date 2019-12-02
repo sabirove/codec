@@ -44,7 +44,7 @@ public final class Codec<T> {
     }
 
     /*
-     * Single values API
+     * Single value oriented API
      */
 
     /**
@@ -70,13 +70,13 @@ public final class Codec<T> {
     }
 
     /*
-     * Streams of values API
+     * Stream oriented API
      */
 
     /**
      * Wrap the provided {@link OutputStream} to write the stream of values encoded by this codec.
      *
-     * @throws UncheckedIOException wrapping the original {@link IOException} when IO operation fails
+     * @throws UncheckedIOException wrapping the original {@link IOException} when wrap operation fails
      */
     public EncoderStream<T> wrap(@WillNotClose OutputStream os) {
         try {
@@ -89,7 +89,7 @@ public final class Codec<T> {
     /**
      * Wrap the provided {@link InputStream} to decode the stream of values previously encoded by this codec.
      *
-     * @throws UncheckedIOException wrapping the original {@link IOException} when IO operation fails
+     * @throws UncheckedIOException wrapping the original {@link IOException} when wrap operation fails
      */
     public DecoderStream<T> wrap(@WillNotClose InputStream is) {
         try {
@@ -113,7 +113,7 @@ public final class Codec<T> {
     public static final class Builder<T> {
         private final CodecFunction<T> function;
         private CodecFilter filter = CodecFilters.noOp();
-        private CodecFilter bufferSpec = CodecBufferSpec.withDefaultSize();
+        private CodecFilter bufferSpec = CodecBufferSpec.ofDefaultSize();
 
         private Builder(CodecFunction<T> function) {
             this.function = function;

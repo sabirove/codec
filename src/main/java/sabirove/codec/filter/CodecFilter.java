@@ -56,9 +56,10 @@ public abstract class CodecFilter {
 
     @SuppressWarnings("ObjectEquality")
     public final CodecFilter chain(CodecFilter next) {
-        if (this == CodecFilters.noOp()) {
+        CodecFilter noOp = CodecFilters.noOp();
+        if (this == noOp) {
             return next;
-        } else if (next == CodecFilters.noOp()) {
+        } else if (next == noOp) {
             return this;
         }
         return of(out -> filter(next.filter(out)), in -> filter(next.filter(in)));
@@ -85,7 +86,7 @@ public abstract class CodecFilter {
     }
 
     @FunctionalInterface
-    public interface Wrapper<T> {
-        T wrap(T input) throws IOException;
+    public interface Wrapper<T extends Closeable> {
+        T wrap(@WillNotClose T input) throws IOException;
     }
 }

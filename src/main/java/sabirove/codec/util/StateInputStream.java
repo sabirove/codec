@@ -33,17 +33,19 @@ import static sabirove.codec.util.CodecUtil.checkArgument;
 import static sabirove.codec.util.CodecUtil.throwUnchecked;
 
 /**
- * {@link FilterInputStream} implementation that can be used to read most of the common data types
- * that were written using the {@link StateOutputStream} or the corresponding encoding format.
- * This is the more robust analog of the {@link DataInputStream} which can be used to implement binary
+ * {@link FilterInputStream} implementation that can be used to read most of the common Java types
+ * with binary deserialization semantics.
+ * Intended to be used in tandem with complementary {@link StateOutputStream} that uses the same encoding format
+ * to serialize the data.
+ * <p>
+ * This is the more robust analog of the {@link DataInputStream} that can be used to implement binary
  * deserialization of an arbitrary object ({@code state}) by sequentially reading the individual fields.
  *
  * @apiNote <ul>
- * <li>Supports reading the LEB128 variable-length encoded {@code int} and {@code long} types</li>
+ * <li>supports reading the LEB128 variable-length encoded signed/unsigned {@code int} and {@code long} values</li>
  * <li>underlying IOExceptions are rethrown as {@link UncheckedIOException} to keep the API clean</li>
- * <li>All {@code getXXX} methods will throw {@link EOFException} wrapped in {@link UncheckedIOException} if the
- * end of stream is reached while reading.
- * Use {@link #isEOF()} if the explicit check is required.</li>
+ * <li>all {@code getXXX} methods will throw {@link EOFException} wrapped in {@link UncheckedIOException}
+ * when the end of stream reached while reading. Use {@link #isEOF()} if the explicit check is required.</li>
  * <li>no nulls will ever be read</li>
  * </ul>
  * @see StateOutputStream

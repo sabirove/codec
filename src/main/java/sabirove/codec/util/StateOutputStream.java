@@ -28,13 +28,16 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static sabirove.codec.util.CodecUtil.throwUnchecked;
 
 /**
- * {@link FilterOutputStream} implementation that can be used to write most of the common data types
- * that can be read using the {@link StateInputStream} after that.
- * This is the more robust analog of the {@link DataOutputStream} which can be used to implement binary
+ * {@link FilterOutputStream} implementation that can be used to write most of the common Java types
+ * with binary serialization semantics.
+ * Intended to be used in tandem with complementary {@link StateInputStream} that uses same encoding format
+ * to deserialize the data.
+ * <p>
+ * This is the more robust analog of the {@link DataOutputStream} that can be used to implement binary
  * serialization of an arbitrary object ({@code state}) by sequentially writing the individual fields.
  *
  * @apiNote <ul>
- * <li>supports writing signed/unsigned {@code int} and {@code long} values with LEB128 variable-length encoding</li>
+ * <li>supports writing the LEB128 variable-length encoded signed/unsigned {@code int} and {@code long} values</li>
  * <li>underlying IOExceptions are rethrown as {@link UncheckedIOException} to keep the API clean</li>
  * <li>no nulls are allowed to be written</li>
  * </ul>
