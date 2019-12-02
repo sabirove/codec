@@ -33,6 +33,9 @@ final class BinaryCodecFunction extends CodecFunction<byte[]> {
     public byte[] read(InputStream in) throws IOException {
         int len = Varint.readUnsignedVarInt(in);
         byte[] bytes = new byte[len];
+        if (len == 0) {
+            return bytes;
+        }
         int read = in.read(bytes);
         if (read == -1) {
             throw new EOFException();
