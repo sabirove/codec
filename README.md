@@ -1,5 +1,6 @@
-[![Build Status](https://travis-ci.org/sabirove/codec.svg?branch=master)](https://travis-ci.org/sabirove/codec)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Build Status](https://travis-ci.org/sabirove/codec.svg?branch=master)](https://travis-ci.org/sabirove/codec)
+[![Coverage Status](https://coveralls.io/repos/github/sabirove/codec/badge.svg)](https://coveralls.io/github/sabirove/codec)
 
 ## Codec utility
 
