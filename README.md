@@ -29,7 +29,7 @@ Create and use the `Codec` like so:
     void testCodec() {
         final Codec<Person> personCodec =
                 Codec.withFunction(CodecFunctions.javaSerializing(Person.class))
-                        .withBuffer(CodecBufferSpec.withDefaultSize())
+                        .withBuffer(CodecBufferSpec.ofDefaultSize())
                         .withFilterChain(
                                 CodecFilters.compressWithGzip(),
                                 CodecFilters.encodeWithBase64Url()
@@ -54,8 +54,7 @@ Create and use the `Codec` like so:
         }
     }
 ```
-Now `bytes` array contains data corresponding to the two `Person` objects serialized then Gzip compressed
-and finally base64/url encoded.  
+Now `bytes` array contains two `Person` objects serialized then Gzip compressed and finally base64/url encoded.  
 Reversing read (decode) operation is straightforward granted we use the same `Codec` instance (or similarly build one)
 that was used to write the data.
 
@@ -240,7 +239,7 @@ Assemble the `Codec` with the following `filter chain`: serialization -> encrypt
 ```java
     final Codec<State> codec =
             Codec.withFunction(CodecFunctions.binarySerializing(State::write, State::read))
-                    .withBuffer(CodecBufferSpec.withDefaultSize())
+                    .withBuffer(CodecBufferSpec.ofDefaultSize())
                     .withFilterChain(
                             CodecFilters.encryptWithAes(mySecretKey),
                             CodecFilters.encodeWithBase64Url()
