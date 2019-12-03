@@ -176,11 +176,17 @@ public final class StateInputStream extends FilterInputStream {
 
     public byte[] getBytes() {
         try {
+            InputStream in = this.in;
             int len = Varint.readUnsignedVarInt(in);
             byte[] bytes = new byte[len];
-            int read = in.read(bytes, 0, len);
-            if (read != len) {
-                throw new EOFException();
+            if (len > 0) {
+                for (int i = 0; i < len; i++) {
+                    int b = in.read();
+                    if (b == -1) {
+                        throw new EOFException();
+                    }
+                    bytes[i] = (byte) b;
+                }
             }
             return bytes;
         } catch (IOException e) {
