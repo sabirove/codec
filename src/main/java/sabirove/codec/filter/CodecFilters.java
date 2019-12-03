@@ -45,11 +45,11 @@ public final class CodecFilters {
             Base64.getMimeDecoder()::wrap
     );
     private static final CodecFilter COMPRESS_DEFLATE = CodecFilter.of(
-            DeflaterOutputStream::new,
+            os -> new DeflaterOutputStream(os, true),
             InflaterInputStream::new
     );
     private static final CodecFilter COMPRESS_GZIP = CodecFilter.of(
-            GZIPOutputStream::new,
+            os -> new GZIPOutputStream(os, true),
             GZIPInputStream::new
     );
 
