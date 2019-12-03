@@ -42,9 +42,9 @@ class CodecTest {
                     ).build();
 
     @RepeatedTest(50)
-    void name() {
+    void testStreamEncodeDecode() {
         List<State> expected = Stream.generate(State::random)
-                .limit(Rnd.rndInt(20))
+                .limit(Rnd.rndInt(10))
                 .collect(Collectors.toList());
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -62,4 +62,13 @@ class CodecTest {
             }
         }
     }
+
+    @RepeatedTest(100)
+    void testBytesEncodeDecode() {
+        State stat = State.random();
+        byte[] encoded = codec.encode(stat);
+        State decoded = codec.decode(encoded);
+        assertEquals(stat, decoded);
+    }
+
 }
