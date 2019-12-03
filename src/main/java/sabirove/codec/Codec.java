@@ -54,7 +54,7 @@ public final class Codec<T> {
      */
     public byte[] encode(T value) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        wrap(bos).write(value);
+        wrap(bos).writeAndClose(value);
         return bos.toByteArray();
     }
 
@@ -66,7 +66,7 @@ public final class Codec<T> {
      */
     public T decode(byte[] in) {
         ByteArrayInputStream bais = new ByteArrayInputStream(in);
-        return wrap(bais).read();
+        return wrap(bais).readAndClose();
     }
 
     /*
