@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package sabirove.codec.filter;
+package com.github.sabirove.codec.filter;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -24,10 +24,10 @@ import javax.crypto.*;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import sabirove.codec.util.CodecUtil;
+import com.github.sabirove.codec.util.CodecUtil;
 
 
-import static sabirove.codec.util.CodecUtil.checkArgument;
+import static com.github.sabirove.codec.util.CodecUtil.checkArgument;
 
 /*
  * - Galois/Counter transformation mode (AES/GCM/NoPadding) - streaming AES with data integrity validation

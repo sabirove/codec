@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package sabirove.codec.filter;
+package com.github.sabirove.codec.filter;
 
 import java.io.*;
 import java.security.SecureRandom;
 
 import org.junit.jupiter.api.RepeatedTest;
-import sabirove.codec.*;
+import com.github.sabirove.codec.*;
 
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;

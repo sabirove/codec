@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package sabirove.codec.filter;
+package com.github.sabirove.codec.filter;
 
-import sabirove.codec.Rnd;
+import com.github.sabirove.codec.Rnd;
 
 
 import static org.junit.jupiter.api.Assertions.assertTrue;

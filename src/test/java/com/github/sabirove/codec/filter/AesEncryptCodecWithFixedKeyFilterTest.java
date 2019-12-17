@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package sabirove.codec.filter;
+package com.github.sabirove.codec.filter;
 
 import java.security.SecureRandom;
 

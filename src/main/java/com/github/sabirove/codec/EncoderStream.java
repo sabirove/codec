@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package sabirove.codec;
+package com.github.sabirove.codec;
 
 import java.io.*;
 
-import sabirove.codec.function.CodecFunction;
-import sabirove.codec.util.CodecUtil;
+import com.github.sabirove.codec.function.CodecFunction;
+import com.github.sabirove.codec.util.CodecUtil;
 
 /**
  * {@link OutputStream} wrapper that allows to write the encoded values to the underlying stream.

@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package sabirove.codec;
+package com.github.sabirove.codec;
 
 import java.io.*;
 
 import javax.annotation.WillNotClose;
 
-import sabirove.codec.filter.*;
-import sabirove.codec.function.CodecFunction;
+import com.github.sabirove.codec.filter.*;
+import com.github.sabirove.codec.function.CodecFunction;
 
 
-import static sabirove.codec.util.CodecUtil.throwUnchecked;
+import static com.github.sabirove.codec.util.CodecUtil.throwUnchecked;
 
 /**
  * Bidirectional IO function suitable to encode/decode single values and streams of values
