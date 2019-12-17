@@ -63,27 +63,27 @@ that was used to write the data.
 - [About](#about)
 - [Codec function](#codec-function)
 - [Codec filter](#codec-filter)
-- [Codec API](#codec-api)
-- [IO buffering](#io-buffering)
+- [API flavours](#api-flavours)
+- [buffering](#buffering)
 - [Serialization functions](#serialization-functions)
 - [AES encryption filter](#aes-encryption-filter)
 - [Noteworthy application examples](#noteworthy-application-examples)
 
 
 #### About
-`Codec` is a bidirectional IO function suitable to encode/decode single values and streams of values of the specific
-type operating on top of the `java.io` streams.  
-In this context, *encoding* an object of type `<T>` means *serializing* it against an `OutputStream`
-and so *decoding* such object means *deserializing* it against an `InputStream` holding the *encoded* contents.
+[Codec](src/main/java/sabirove/codec/Codec.java) is a bidirectional IO function suitable to encode and decode single values or streams of values of the specific
+type operating on top of the `java.io` streams: *encoding* an object of type `<T>` means *serializing* it against
+an `OutputStream` while  *decoding* is a complementary operation of *deserializing* such object against an `InputStream`
+holding the encoded contents.
 
-Component-wise, 
-[Codec](src/main/java/sabirove/codec/Codec.java) = [CodecFunction](src/main/java/sabirove/codec/function/CodecFunction.java) +
- [CodecFilter](src/main/java/sabirove/codec/filter/CodecFilter.java)  
+`Codec` consists of [CodecFunction](#codec-function) and zero to many [CodecFilter](#codec-filter)s forming the following
+processing pipeline:
+* Encoding: `T -> CodecFunction<T> -> CodecFilter1 -> CodecFilter2 -> ... CodecFilterN -> OutputStream`  
+* Decoding: `T <- CodecFunction<T> <- CodecFilter1 <- CodecFilter2 <- ... CodecFilterN <- InputStream`
 
-while `Codec` operations can be described as following: 
-- Encoding: `T -> CodecFunction<T> -> CodecFilter1 -> CodecFilter2 -> ... CodecFilterN -> OutputStream`
-- Decoding: `T <- CodecFunction<T> <- CodecFilter1 <- CodecFilter2 <- ... CodecFilterN <- InputStream`
-
+In the simplest case `Codec` consists of just a [CodecFunction](#codec-function) and is used to serialize and 
+deserialize objects without extra byte stream transformations.  
+`Codec` instance can be obtained by using the builder API: `Codec.withFunction(..)`
 
 #### Codec function
 [CodecFunction](src/main/java/sabirove/codec/function/CodecFunction.java) is a bidirectional serialization function
@@ -129,9 +129,9 @@ The number of predefined `CodecFilter` implementations can be obtained with
 - `CodecFilters.encodeWithBase64Mime()`: apply `Base64MIME` encode/decode on top of the target streams
 - `CodecFilters.encryptWithAes()`: apply `AES` encrypt/decrypt on top of the target streams
 
-#### Codec API
+#### API flavours
 
-[Codec](src/main/java/sabirove/codec/Codec.java) utility features two kinds of API:
+[Codec](src/main/java/sabirove/codec/Codec.java) features two favours of API:
 
 - **Single value oriented**
 
@@ -150,7 +150,7 @@ the extra object allocations required per single operation: use stream-oriented 
     public EncoderStream<T> wrap(OutputStream os);
     public DecoderStream<T> wrap(InputStream is);
 ```
-These wrap provided `java.io` streams with
+These wrap corresponding `java.io` streams with
 [EncoderStream](src/main/java/sabirove/codec/EncoderStream.java)/[DecoderStream](src/main/java/sabirove/codec/DecoderStream.java) 
 which are a pair of light wrappers used to execute reads and writes against the underlying streams in a straightforward fashion:
 
@@ -163,23 +163,16 @@ which are a pair of light wrappers used to execute reads and writes against the 
         public T read();
     }
 ```
-Codecs can be obtained (built) by using the builder API: `Codec.withFunction(..)`
 
-#### IO buffering
+#### Buffering
 
 IO buffering is addressed with special kind of `CodecFilter`: [CodecBufferSpec](src/main/java/sabirove/codec/filter/CodecBufferSpec.java),
 which is used as an *edge* filter applying the `BufferedInputStream/BufferedOutputStream` wrappers on top of the
-provided streams.  
-`CodecBufferSpec` can be instructed with specific target types of `InputStream/OutputStream` to exclude from buffer
-application by means of `CodecBufferSpec.withXXXStreamExclusions(..)` APIs.  
+target streams.  
+Obtain with factory `CodecBufferSpec.ofSize(..)` specifying the input/output buffer sizes in bytes or opt in for the
+default sized one with `CodecBufferSpec.ofDefaultSize()`. Certain kinds of `Input/Output -Stream` types can be excluded
+from buffering application by means of `CodecBufferSpec.withXXXStreamExclusions(..)` calls.
 
-Obtain with factory `CodecBufferSpec.ofSize(..)` specifying the input/output buffer sizes (in bytes) or opt in for
-default sized one with `CodecBufferSpec.ofDefaultSize()`.
-
-*NOTE*:
-This filter is intended for use with Codec builder API mentioned above and is not meant to be used as the standalone
-filter within the filter chain. 
- 
 #### Serialization functions
 
 Two of the most notable `CodecFunction` implementations provided out-of-the-box are:
@@ -196,33 +189,34 @@ Obtain with: `CodecFunctions.javaSerializing(..)` providing the target `Class`.
 This one is based on the pair of custom `java.io` stream wrappers:
 [StateInputBuffer](src/main/java/sabirove/codec/util/StateInputStream.java) /
 [StateOutputBuffer](src/main/java/sabirove/codec/util/StateOutputStream.java)
-which provide convenient API to read and write most of the standard Java types with relative ease,
-including collections, maps, arrays, strings, enums as well as some `java.time` and `java.math` data types.  
+providing convenient API to read and write most of the standard Java types, including collections, maps, arrays,
+strings, enums and then some.  
 Supports IO with LEB128 variable-length encoded `int` and `long` values and uses unsigned variable-length
-ints to serialize enum ordinals and length values for the contiguous data types (e.g. collections, arrays, strings)
-which helps to yield the smallest footprint possible.  
-Can serve as the base for ad-hoc binary serialization implementation.
+ints to serialize enum ordinals and as well as contiguous data types length values (e.g. collections, arrays, strings)
+accounting for rather small serialization footprint.  
+Can thus serve as the base for solid ad-hoc binary serialization implementation.
 
 Obtain with: `CodecFunctions.binarySerializing(..)` providing a pair of functions for reading and writing the 
-target type, e.g such `CodecFunction` for aforementioned `Person` pojo would look like:
+target type.   
+For example, such `CodecFunction` for aforementioned `Person` pojo would look like:
 ```java
-    CodecFunction<Person> personCodecFunction = CodecFunctions.binarySerializing(
-            (sos, person) -> sos.putString(person.name).putInt(person.age),
-            sis -> new Person(sis.getString(), sis.getInt())
-    );
-
+    CodecFunction<Person> personCodecFunction = 
+        CodecFunctions.binarySerializing(
+                (out, person) -> out.putString(person.name).putInt(person.age),
+                in -> new Person(in.getString(), in.getInt())
+        );           
 ```
 Limitations: 
-  1. reading and writing of the fields should be carried out in the exact same order.
-  2. writing null values is prohibited.
-  3. no type information is stored and validated whatsoever.
+  1. reading and writing of the fields should be carried out in the exact same order
+  2. writing (and so reading) null values is not supported
+  3. no type information is stored and validated whatsoever
 
 
 #### AES encryption filter
 
-Encryption filter that is based on the strong streaming AES encryption method with data integrity validation
+Encryption filter based on a solid AES encryption method with data integrity validation
 and cryptographically strong random number generators.
-Sensibly configured. Implemented on top of the the standard library (`java.security`/`java.crypto`) components.
+Sensibly configured. Implemented on top of the the standard (`java.security`/`java.crypto`) components.
 
 Obtain with `CodecFilters.encryptWithAes(..)` providing the `16 byte` secret key (or opt in for the random generated one).
 
@@ -246,12 +240,10 @@ Assemble the `Codec` with the following `filter chain`: serialization -> encrypt
                     ).build();
 
 ```
-Such `Codec` can be used to encode some *sensitive* _state_ object into the encrypted/encoded string
-that could be used to safely pass around on the web by means of, for instance, request query parameters.
-This can be useful when implementing the two-way negotiation process (like user registration/confirmation 
+Now such `Codec` can be used to encode some *sensitive* _state_ object into the encrypted/encoded string
+that could be safely passed around on the web by means of, for instance, request query parameters.
+This can be useful when implementing a two-way negotiation process (like user registration/confirmation 
 or OAuth consent flows) which allows to achieve two major goals:
 - stateless operation: no need to keep the state of the user request between the two consecutive steps of the process
 - validating the authenticity of the following "return" request: payload can be properly decrypted only if it wasn't 
-tampered with and only with your private key
-
-*Hint*: binary serialization helps keeping the footprint small which is useful when working with query parameters.
+tampered with and only with your private key.
