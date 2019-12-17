@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.org/sabirove/codec.svg?branch=master)](https://travis-ci.org/sabirove/codec)
-[![Coverage Status](https://coveralls.io/repos/github/sabirove/codec/badge.svg)](https://coveralls.io/github/sabirove/codec)
+[![Build Status](https://travis-ci.org/com.github.sabirove/codec.svg?branch=master)](https://travis-ci.org/com.github.sabirove/codec)
+[![Coverage Status](https://coveralls.io/repos/github/com.github.sabirove/codec/badge.svg)](https://coveralls.io/github/com.github.sabirove/codec)
 [![License](http://img.shields.io/:license-apache-brightgreen.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
 
 ## Codec utility
@@ -71,7 +71,7 @@ that was used to write the data.
 
 
 #### About
-[Codec](src/main/java/sabirove/codec/Codec.java) is a bidirectional IO function suitable to encode and decode single values or streams of values of the specific
+[Codec](src/main/java/com.github.sabirove/codec/Codec.java) is a bidirectional IO function suitable to encode and decode single values or streams of values of the specific
 type operating on top of the `java.io` streams: *encoding* an object of type `<T>` means *serializing* it against
 an `OutputStream` while  *decoding* is a complementary operation of *deserializing* such object against an `InputStream`
 holding the encoded contents.
@@ -86,14 +86,14 @@ deserialize objects without extra byte stream transformations.
 `Codec` instance can be obtained by using the builder API: `Codec.withFunction(..)`
 
 #### Codec function
-[CodecFunction](src/main/java/sabirove/codec/function/CodecFunction.java) is a bidirectional serialization function
+[CodecFunction](src/main/java/com.github.sabirove/codec/function/CodecFunction.java) is a bidirectional serialization function
 that writes and reads back the `<T>` values against the `java.io` streams with a pair of complementary functions:
 ```java
     public abstract void write(T value, OutputStream out) throws IOException;
     public abstract T read(InputStream in) throws IOException;
 ```
 The number of predefined `CodecFunction` implementations can be obtained with 
-[CodecFunctions](src/main/java/sabirove/codec/function/CodecFunctions.java) factory, they are:
+[CodecFunctions](src/main/java/com.github.sabirove/codec/function/CodecFunctions.java) factory, they are:
 - `CodecFunctions.javaSerializing(..)`: IO on pojo types with standard java serialization (works for any `Serializable` type)
 - `CodecFunctions.binarySerializing(..)`: IO on pojo types with ad-hoc binary serialization
 - `CodecFunctions.binary(..)`: IO on plain byte arrays of arbitrary size
@@ -103,7 +103,7 @@ The number of predefined `CodecFunction` implementations can be obtained with
 
 
 #### Codec filter
-[CodecFilter](src/main/java/sabirove/codec/filter/CodecFilter.java) is a pair of complementary 
+[CodecFilter](src/main/java/com.github.sabirove/codec/filter/CodecFilter.java) is a pair of complementary 
 `OutputStream/InputStream` wrappers in the single package that are used to apply extra filtering on top of
 the target `java.io` streams (e.g. to apply compression/decompression or some sort of additional encoding/decoding, like Base64).
 ```java
@@ -121,7 +121,7 @@ filtering scheme:
 - Decoding: `... <- CodecFilter1 <- CodecFilter2 <- InputStream`
 
 The number of predefined `CodecFilter` implementations can be obtained with 
-[CodecFilters](src/main/java/sabirove/codec/filter/CodecFilters.java) factory, they are:
+[CodecFilters](src/main/java/com.github.sabirove/codec/filter/CodecFilters.java) factory, they are:
 - `CodecFilters.compressWithDeflate()`: apply `Deflate` compress/decompress on top of the target streams
 - `CodecFilters.compressWithGzip()`: apply `Gzip` compress/decompress on top of the target streams
 - `CodecFilters.encodeWithBase64()`: apply `Base64` encode/decode on top of the target streams
@@ -131,7 +131,7 @@ The number of predefined `CodecFilter` implementations can be obtained with
 
 #### API flavours
 
-[Codec](src/main/java/sabirove/codec/Codec.java) features two favours of API:
+[Codec](src/main/java/com.github.sabirove/codec/Codec.java) features two favours of API:
 
 - **Single value oriented**
 
@@ -151,7 +151,7 @@ the extra object allocations required per single operation: use stream-oriented 
     public DecoderStream<T> wrap(InputStream is);
 ```
 These wrap corresponding `java.io` streams with
-[EncoderStream](src/main/java/sabirove/codec/EncoderStream.java)/[DecoderStream](src/main/java/sabirove/codec/DecoderStream.java) 
+[EncoderStream](src/main/java/com.github.sabirove/codec/EncoderStream.java)/[DecoderStream](src/main/java/com.github.sabirove/codec/DecoderStream.java) 
 which are a pair of light wrappers used to execute reads and writes against the underlying streams in a straightforward fashion:
 
 ```java
@@ -166,7 +166,7 @@ which are a pair of light wrappers used to execute reads and writes against the 
 
 #### Buffering
 
-IO buffering is addressed with special kind of `CodecFilter`: [CodecBufferSpec](src/main/java/sabirove/codec/filter/CodecBufferSpec.java),
+IO buffering is addressed with special kind of `CodecFilter`: [CodecBufferSpec](src/main/java/com.github.sabirove/codec/filter/CodecBufferSpec.java),
 which is used as an *edge* filter applying the `BufferedInputStream/BufferedOutputStream` wrappers on top of the
 target streams.  
 Obtain with factory `CodecBufferSpec.ofSize(..)` specifying the input/output buffer sizes in bytes or opt in for the
@@ -187,8 +187,8 @@ Obtain with: `CodecFunctions.javaSerializing(..)` providing the target `Class`.
 
 ##### Binary serialization function 
 This one is based on the pair of custom `java.io` stream wrappers:
-[StateInputBuffer](src/main/java/sabirove/codec/util/StateInputStream.java) /
-[StateOutputBuffer](src/main/java/sabirove/codec/util/StateOutputStream.java)
+[StateInputBuffer](src/main/java/com.github.sabirove/codec/util/StateInputStream.java) /
+[StateOutputBuffer](src/main/java/com.github.sabirove/codec/util/StateOutputStream.java)
 providing convenient API to read and write most of the standard Java types, including collections, maps, arrays,
 strings, enums and then some.  
 Supports IO with LEB128 variable-length encoded `int` and `long` values and uses unsigned variable-length
