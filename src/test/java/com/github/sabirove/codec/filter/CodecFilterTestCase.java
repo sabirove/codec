@@ -44,36 +44,36 @@ abstract class CodecFilterTestCase {
         byte[] input = getInputBytes();
 
         TestOutputStream tos = new TestOutputStream();
-        OutputStream fOut = filter.filter(tos);
+        OutputStream filteredTos = filter.filter(tos);
         tos.assertNotFlushed();
         tos.assertNotClosed();
 
-        fOut.write(input);
-        //fOut.flush();
-        //tos.assertFlushed();
-        fOut.close();
+        filteredTos.write(input);
+        filteredTos.flush();
+        tos.assertFlushed();
+        filteredTos.close();
         tos.assertClosed();
 
         byte[] encoded = tos.toByteArray();
         testEncoded(input, encoded);
 
         TestInputStream tis = new TestInputStream(encoded);
-        InputStream fIn = filter.filter(tis);
+        InputStream filteredTis = filter.filter(tis);
         tis.assertNotClosed();
 
         byte[] decoded = new byte[input.length];
 
         //we explicitly read like that, b.c. there's InflateInputStream
-        //that will fail to read all data otherwise, e.g. with plain fIn.read(byte[])
+        //that will fail to read all data otherwise, e.g. with plain filteredTis.read(byte[])
         int b;
         int i = 0;
-        while ((b = fIn.read()) != -1) {
+        while ((b = filteredTis.read()) != -1) {
             decoded[i++] = (byte) b;
         }
 
         assertArrayEquals(input, decoded);
 
-        fIn.close();
+        filteredTis.close();
         tis.assertClosed();
     }
 }
