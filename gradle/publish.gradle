@@ -60,20 +60,14 @@ publishing {
     }
     repositories {
         maven {
-            // change URLs to point to your repos, e.g. http://my.org/repo
-            def releasesRepoUrl = "$buildDir/repos/releases"
-            def snapshotsRepoUrl = "$buildDir/repos/snapshots"
+            def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
+            def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
             url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+            credentials {
+                username sonatypeUsername
+                password sonatypePassword
+            }
         }
-        //https://oss.sonatype.org/content/repositories/snapshots/
-        //https://oss.sonatype.org/service/local/staging/deploy/maven2/
-//        maven {
-//            url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
-//            credentials {
-//                username sonatypeUsername
-//                password sonatypePassword
-//            }
-//        }
     }
 }
 
