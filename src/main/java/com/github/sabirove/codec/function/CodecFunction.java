@@ -16,10 +16,12 @@
 
 package com.github.sabirove.codec.function;
 
-import java.io.*;
+import java.io.EOFException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.function.Function;
 
-import javax.annotation.WillNotClose;
 
 /**
  * Bidirectional serialization function for doing IO operations
@@ -36,14 +38,14 @@ public abstract class CodecFunction<T> {
      * @throws IOException when fails to write to the stream
      * @implNote shouldn't flush or close the underlying stream
      */
-    public abstract void write(T value, @WillNotClose OutputStream out) throws IOException;
+    public abstract void write(T value, OutputStream out) throws IOException;
 
     /**
      * @throws IOException  when fails to read from the stream
      * @throws EOFException when trying to read and the end of the input stream reached
      * @implNote shouldn't close the underlying stream
      */
-    public abstract T read(@WillNotClose InputStream in) throws IOException;
+    public abstract T read(InputStream in) throws IOException;
 
     /**
      * Adapt this function to another target type by using a pair of specified type converters.

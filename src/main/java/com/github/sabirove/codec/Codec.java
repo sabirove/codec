@@ -18,8 +18,6 @@ package com.github.sabirove.codec;
 
 import java.io.*;
 
-import javax.annotation.WillNotClose;
-
 import com.github.sabirove.codec.filter.*;
 import com.github.sabirove.codec.function.CodecFunction;
 
@@ -77,8 +75,9 @@ public final class Codec<T> {
      * Wrap the provided {@link OutputStream} to write the stream of values encoded by this codec.
      *
      * @throws UncheckedIOException wrapping the original {@link IOException} when wrap operation fails
+     * @implNote shouldn't close the underlying stream
      */
-    public EncoderStream<T> wrap(@WillNotClose OutputStream os) {
+    public EncoderStream<T> wrap(OutputStream os) {
         try {
             return new EncoderStream<>(filter.filter(os), function);
         } catch (IOException e) {
@@ -90,8 +89,9 @@ public final class Codec<T> {
      * Wrap the provided {@link InputStream} to decode the stream of values previously encoded by this codec.
      *
      * @throws UncheckedIOException wrapping the original {@link IOException} when wrap operation fails
+     * @implNote shouldn't close the underlying stream
      */
-    public DecoderStream<T> wrap(@WillNotClose InputStream is) {
+    public DecoderStream<T> wrap(InputStream is) {
         try {
             return new DecoderStream<>(filter.filter(is), function);
         } catch (IOException e) {

@@ -18,7 +18,6 @@ package com.github.sabirove.codec;
 
 import com.github.sabirove.codec.function.CodecFunction;
 import com.github.sabirove.codec.util.CodecUtil;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import java.io.Flushable;
 import java.io.IOException;
@@ -91,7 +90,6 @@ public final class EncoderStream<T> implements AutoCloseable, Flushable {
      * @throws UncheckedIOException wrapping the original {@link IOException} when IO operation fails
      */
     @Override
-    @SuppressFBWarnings("RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE")
     public void close() {
         try (OutputStream os = this.os) {
             os.flush();

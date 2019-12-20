@@ -16,12 +16,10 @@
 
 package com.github.sabirove.codec.filter;
 
+import com.github.sabirove.codec.Codec;
+
 import java.io.*;
 import java.util.stream.Stream;
-
-import javax.annotation.WillNotClose;
-
-import com.github.sabirove.codec.Codec;
 
 /**
  * Bidirectional encoding/decoding filter providing extra post/pre- processing of the raw data
@@ -41,8 +39,7 @@ import com.github.sabirove.codec.Codec;
  * WRITE: {@code bytes -> filter1 -> filter2 -> OUTPUT} <br>
  * READ: {@code bytes <- filter1 <- filter2 <- INPUT} <br>
  *
- * @implNote
- * <ul>
+ * @implNote <ul>
  * <li>do not use {@link BufferedOutputStream}/{@link BufferedInputStream} based filters:
  * IO stream buffering is explicitly addressed within the {@link Codec} implementation.</li>
  * <li>implementations are expected to throw {@link IOException} as is without any wrapping.</li>
@@ -50,9 +47,15 @@ import com.github.sabirove.codec.Codec;
  */
 public abstract class CodecFilter {
 
-    public abstract OutputStream filter(@WillNotClose OutputStream out) throws IOException;
+    /**
+     * @implNote shouldn't close the underlying stream
+     */
+    public abstract OutputStream filter(OutputStream out) throws IOException;
 
-    public abstract InputStream filter(@WillNotClose InputStream in) throws IOException;
+    /**
+     * @implNote shouldn't close the underlying stream
+     */
+    public abstract InputStream filter(InputStream in) throws IOException;
 
     @SuppressWarnings("ObjectEquality")
     public final CodecFilter chain(CodecFilter next) {
@@ -87,6 +90,9 @@ public abstract class CodecFilter {
 
     @FunctionalInterface
     public interface Wrapper<T extends Closeable> {
-        T wrap(@WillNotClose T input) throws IOException;
+        /**
+         * @implNote shouldn't close the underlying stream
+         */
+        T wrap(T input) throws IOException;
     }
 }
