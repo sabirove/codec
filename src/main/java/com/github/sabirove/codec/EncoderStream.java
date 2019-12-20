@@ -16,10 +16,14 @@
 
 package com.github.sabirove.codec;
 
-import java.io.*;
-
 import com.github.sabirove.codec.function.CodecFunction;
 import com.github.sabirove.codec.util.CodecUtil;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
+import java.io.Flushable;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.UncheckedIOException;
 
 /**
  * {@link OutputStream} wrapper that allows to write the encoded values to the underlying stream.
@@ -68,7 +72,8 @@ public final class EncoderStream<T> implements AutoCloseable, Flushable {
     }
 
     /**
-     * @inheritDoc
+     * Flushes the underlying {@link OutputStream} as per the {@link Flushable} contract.
+     *
      * @throws UncheckedIOException wrapping the original {@link IOException} when IO operation fails
      */
     @Override
@@ -81,10 +86,12 @@ public final class EncoderStream<T> implements AutoCloseable, Flushable {
     }
 
     /**
-     * @inheritDoc
+     * Closes the underlying {@link OutputStream} as per the {@link AutoCloseable} contract.
+     *
      * @throws UncheckedIOException wrapping the original {@link IOException} when IO operation fails
      */
     @Override
+    @SuppressFBWarnings("RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE")
     public void close() {
         try (OutputStream os = this.os) {
             os.flush();

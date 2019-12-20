@@ -4,7 +4,7 @@
 
 ## Codec utility
 
-- Small library with no external dependencies (apart from `com.google.code.findbugs:jsr305` for API annotations)
+- Small library with no external dependencies
 - Plain `java.io` API based
 - Composable design
 - A bunch of out-of-the-box implementations
@@ -64,7 +64,7 @@ that was used to write the data.
 - [Codec function](#codec-function)
 - [Codec filter](#codec-filter)
 - [API flavours](#api-flavours)
-- [buffering](#buffering)
+- [Buffering](#buffering)
 - [Serialization functions](#serialization-functions)
 - [AES encryption filter](#aes-encryption-filter)
 - [Noteworthy application examples](#noteworthy-application-examples)

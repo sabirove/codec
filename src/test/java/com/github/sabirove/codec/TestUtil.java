@@ -38,12 +38,8 @@ public class TestUtil {
         try {
             op.run();
         } catch (Throwable e) {
-            Throwable target = e;
-            if (e instanceof UncheckedIOException) {
-                target = e.getCause();
-                assertTrue(target instanceof IOException,
-                        "IOException cause was expected but not found, e=" + e);
-            }
+            Throwable target = e instanceof UncheckedIOException ? e.getCause() : e;
+            assertTrue(target instanceof IOException, "IOException was expected, got e=" + e);
             assertSame(causeType, target.getClass());
         }
     }

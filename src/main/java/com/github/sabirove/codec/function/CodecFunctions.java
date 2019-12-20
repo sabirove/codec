@@ -80,7 +80,7 @@ public final class CodecFunctions {
 
     /**
      * {@link #binary()} analog that writes and reads against the stream in chunks of the specified size.
-     * <ul>Strictness:
+     * <ul>
      *      <li>If {@code strict} mode is on only the chunks of the exact {@code chinkSize} can be written or read.</li>
      *      <li>If {@code strict} mode is off chunks of any size can be written, while reads are is still in chunks
      *      of specified size except for the last chunk in the stream which could be less (remainder). </li>

@@ -59,7 +59,7 @@ public final class DecoderStream<T> implements AutoCloseable {
     }
 
     /**
-     * @inheritDoc
+     * Closes the underlying {@link InputStream} as per the {@link AutoCloseable} contract.
      * @throws UncheckedIOException wrapping the original {@link IOException} when IO operation fails
      */
     @Override
