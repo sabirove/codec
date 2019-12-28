@@ -17,23 +17,23 @@
 package com.github.sabirove.codec.filter;
 
 
+import com.github.sabirove.codec.Codec;
+
 import java.io.*;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import com.github.sabirove.codec.Codec;
-
 
 import static com.github.sabirove.codec.util.CodecUtil.checkArgument;
 import static com.github.sabirove.codec.util.CodecUtil.checkState;
 
 /**
- * Specialized {@link CodecFilter} implementation that is used by the {@link Codec}
- * instance as the strategy to handle buffering on IO streams.
+ * Specialized {@link CodecFilter} implementation used by a {@link Codec}
+ * instance as the strategy to apply buffering on IO streams.
  *
- * @apiNote not intended to be used within as codec filter chains: should only be used
- * to specify the buffering strategy within the {@link Codec.Builder} API.
+ * @apiNote intended to be used only as part of the {@link Codec.Builder} API.
  */
 public final class CodecBufferSpec extends CodecFilter {
     private static final Set<Class<? extends OutputStream>> DEFAULT_EXCLUDED_OUTPUT_TYPES = Stream.of(
@@ -47,8 +47,8 @@ public final class CodecBufferSpec extends CodecFilter {
     ).collect(Collectors.toSet());
 
     private static final int DEFAULT_BUFFER_SIZE = 8192;
-    private static final CodecBufferSpec DEFAULT_BUFFER_SPEC =
-            new CodecBufferSpec(DEFAULT_BUFFER_SIZE, DEFAULT_BUFFER_SIZE);
+    private static final CodecBufferSpec DEFAULT = new CodecBufferSpec(DEFAULT_BUFFER_SIZE, DEFAULT_BUFFER_SIZE);
+    private static final CodecBufferSpec EMPTY = new CodecBufferSpec(0, 0);
 
     private final int inBufferSize;
     private final int outBufferSize;
@@ -93,32 +93,67 @@ public final class CodecBufferSpec extends CodecFilter {
      */
     public static CodecBufferSpec ofSize(int inputBufferSize, int outputBufferSize) {
         checkArgument(inputBufferSize >= 0 && outputBufferSize >= 0,
-                "buffer size should be >= 0 ('0' means buffering is disabled)");
-        return new CodecBufferSpec(inputBufferSize, outputBufferSize);
+                "buffer sizes should be >= 0 ('0' means buffering is disabled)");
+        return inputBufferSize == 0 && outputBufferSize == 0
+                ? EMPTY
+                : new CodecBufferSpec(inputBufferSize, outputBufferSize);
     }
 
     /**
-     * Buffering spec with default input/output buffer sizes equal to {@link CodecBufferSpec#DEFAULT_BUFFER_SIZE}.
+     * Buffering spec with default buffer sizes of {@link CodecBufferSpec#DEFAULT_BUFFER_SIZE}.
      */
     public static CodecBufferSpec ofDefaultSize() {
-        return DEFAULT_BUFFER_SPEC;
+        return DEFAULT;
     }
 
     /**
-     * Get this instance configured with the specified {@link OutputStream} types to be excluded from buffering.
+     * Buffering spec implying no buffering should be applied.
      */
-    public CodecBufferSpec withOutputStreamExclusions(Set<Class<? extends OutputStream>> outExclusions) {
+    public static CodecBufferSpec noBuffer() {
+        return EMPTY;
+    }
+
+    /**
+     * Get the copy of this instance configured with the specified {@link OutputStream} types to be excluded from buffering.
+     */
+    public CodecBufferSpec withOutputStreamExclusions(Collection<Class<? extends OutputStream>> outExclusions) {
         checkState(outBufferSize > 0,
                 "output buffering is disabled, no point to specify exclusions");
-        return new CodecBufferSpec(inBufferSize, outBufferSize, outExclusions, inExclusions);
+        return new CodecBufferSpec(inBufferSize, outBufferSize, new HashSet<>(outExclusions), inExclusions);
     }
 
     /**
-     * Get this instance configured with the specified {@link InputStream} types to be excluded from buffering.
+     * Get the copy of this instance configured with the specified {@link InputStream} types to be excluded from buffering.
      */
-    public CodecBufferSpec withInputStreamExclusions(Set<Class<? extends InputStream>> inExclusions) {
+    public CodecBufferSpec withInputStreamExclusions(Collection<Class<? extends InputStream>> inExclusions) {
         checkState(inBufferSize > 0,
                 "input buffering is disabled, no point to specify exclusions");
-        return new CodecBufferSpec(inBufferSize, outBufferSize, outExclusions, inExclusions);
+        return new CodecBufferSpec(inBufferSize, outBufferSize, outExclusions, new HashSet<>(inExclusions));
+    }
+
+    /**
+     * Get the copy of this instance configured with the specified {@link OutputStream} types added to the set
+     * of types to be excluded from buffering.
+     */
+    public CodecBufferSpec addOutputStreamExclusions(Collection<Class<? extends OutputStream>> outExclusions) {
+        checkState(outBufferSize > 0,
+                "output buffering is disabled, no point to specify exclusions");
+        Set<Class<? extends OutputStream>> all = new HashSet<>(this.outExclusions.size() + outExclusions.size());
+        all.addAll(this.outExclusions);
+        all.addAll(outExclusions);
+        return new CodecBufferSpec(inBufferSize, outBufferSize, all, inExclusions);
+    }
+
+    /**
+     * Get the copy of this instance configured with the specified {@link InputStream} types added to the set
+     * of types to be excluded from buffering.
+     */
+    public CodecBufferSpec addInputStreamExclusions(Collection<Class<? extends InputStream>> inExclusions) {
+        checkState(inBufferSize > 0,
+                "input buffering is disabled, no point to specify exclusions");
+        Set<Class<? extends InputStream>> all = new HashSet<>(this.inExclusions.size() + inExclusions.size());
+        all.addAll(this.inExclusions);
+        all.addAll(inExclusions);
+        return new CodecBufferSpec(inBufferSize, outBufferSize, outExclusions, all);
     }
 }
