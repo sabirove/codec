@@ -16,12 +16,15 @@
 
 package com.github.sabirove.codec.function;
 
-import java.io.*;
-
 import com.github.sabirove.codec.util.Varint;
 
+import java.io.EOFException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
 final class BinaryCodecFunction extends CodecFunction<byte[]> {
-    BinaryCodecFunction() { }
+    private static final byte[] EMPTY = new byte[0];
 
     @Override
     public void write(byte[] value, OutputStream out) throws IOException {
@@ -32,13 +35,15 @@ final class BinaryCodecFunction extends CodecFunction<byte[]> {
     @Override
     public byte[] read(InputStream in) throws IOException {
         int len = Varint.readUnsignedVarInt(in);
-        byte[] bytes = new byte[len];
         if (len == 0) {
-            return bytes;
+            return EMPTY;
         }
+        byte[] bytes = new byte[len];
         int read = in.read(bytes);
-        if (read == -1) {
-            throw new EOFException();
+        if (read < len) {
+            throw read == -1
+                    ? new EOFException()
+                    : new IOException(String.format("incomplete read: expected bytes=%s, actually read=%s", len, read));
         }
         return bytes;
     }
