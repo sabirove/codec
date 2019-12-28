@@ -27,7 +27,7 @@ import com.github.sabirove.codec.function.CodecFunctions;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class ShowcaseTest {
+class CodecShowcaseTest {
 
     static final class Person implements Serializable {
         final String name;

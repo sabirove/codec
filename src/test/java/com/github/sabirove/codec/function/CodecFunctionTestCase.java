@@ -22,8 +22,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.github.sabirove.codec.test_util.Rnd;
+import com.github.sabirove.codec.test_util.TestInputStream;
+import com.github.sabirove.codec.test_util.TestOutputStream;
+import com.github.sabirove.codec.test_util.TestUtil;
 import org.junit.jupiter.api.RepeatedTest;
-import com.github.sabirove.codec.*;
 
 
 import static org.junit.jupiter.api.Assertions.assertTrue;

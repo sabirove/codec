@@ -16,9 +16,8 @@
 
 package com.github.sabirove.codec.filter;
 
+import com.github.sabirove.codec.test_util.Rnd;
 import org.junit.jupiter.api.Assertions;
-import com.github.sabirove.codec.Rnd;
-
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -28,17 +27,18 @@ abstract class EncryptCodecFilterTestCase extends CodecFilterTestCase {
     protected final byte[] getInputBytes() {
         byte[] bytes = new byte[Rnd.rndInt(4096)];
         for (int i = 0; i < bytes.length; i++) {
-            bytes[i] = (byte) Rnd.rndInt('a', 'z');
+            bytes[i] = (byte) Rnd.rndInt('A', 'z');
         }
         return bytes;
     }
 
     @Override
     protected void testEncoded(byte[] input, byte[] encoded) {
+        //should be the case for encryption with added meta information added (checksums, etc)
         assertTrue(encoded.length > input.length);
 
         for (byte b : encoded) {
-            if (b < 'a' || b > 'z') return;
+            if (b < 'A' || b > 'z') return;
         }
 
         Assertions.fail("no encrypted chars found");

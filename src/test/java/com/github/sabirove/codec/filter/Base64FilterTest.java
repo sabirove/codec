@@ -19,7 +19,7 @@ package com.github.sabirove.codec.filter;
 class Base64FilterTest extends Base64FilterTestCase {
     @Override
     protected String getValidChars() {
-        return "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"; //we use no padding, so no '=' included
+        return BASE64_NO_PADDING_CHARS;
     }
 
     @Override

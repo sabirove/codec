@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package com.github.sabirove.codec;
+package com.github.sabirove.codec.test_util;
+
+import com.github.sabirove.codec.util.CodecUtil;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -209,4 +211,8 @@ public enum Rnd {
         return ThreadLocalRandom.current();
     }
 
+    public static <T> T rndElem(T[] array) {
+        CodecUtil.checkArgument(array.length > 0, "empty array");
+        return array[rndInt(array.length)];
+    }
 }

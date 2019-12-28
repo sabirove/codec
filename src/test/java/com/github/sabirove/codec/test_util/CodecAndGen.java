@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-package com.github.sabirove.codec.filter;
+package com.github.sabirove.codec.test_util;
 
-final class Base64UrlFilterTest extends Base64FilterTestCase {
-    @Override
-    protected String getValidChars() {
-        return BASE64_NO_PADDING_CHARS_URL;
-    }
+import com.github.sabirove.codec.Codec;
 
-    @Override
-    protected CodecFilter getFilter() {
-        return CodecFilters.encodeWithBase64Url();
+import java.util.function.Supplier;
+
+public final class CodecAndGen<T> {
+    public final Codec<T> codec;
+    public final Supplier<T> gen;
+
+    CodecAndGen(Codec<T> codec, Supplier<T> gen) {
+        this.codec = codec;
+        this.gen = gen;
     }
 }

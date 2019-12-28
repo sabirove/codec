@@ -18,7 +18,7 @@ package com.github.sabirove.codec.function;
 
 import java.util.Arrays;
 
-import com.github.sabirove.codec.Rnd;
+import com.github.sabirove.codec.test_util.Rnd;
 
 final class BinaryCodecFunctionTest extends CodecFunctionTestCase<byte[]> {
 

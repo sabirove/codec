@@ -14,55 +14,45 @@
  * limitations under the License.
  */
 
-package com.github.sabirove.codec;
+package com.github.sabirove.codec.function;
 
-import com.github.sabirove.codec.test_util.CodecAndGen;
+import com.github.sabirove.codec.test_util.FuncAndGen;
 import com.github.sabirove.codec.test_util.RndCodec;
 import com.github.sabirove.codec.test_util.TestUtil;
 import org.junit.jupiter.api.RepeatedTest;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.github.sabirove.codec.test_util.Rnd.rndInt;
 
-class CodecTest {
+@SuppressWarnings("resource")
+class CodecFunctionTest {
 
-    @RepeatedTest(1000)
-    <T> void testRandomCodecAssemblyStream() {
-        CodecAndGen<T> codecGen = RndCodec.rndCodec();
+    @RepeatedTest(500)
+    <T> void testRandomCodecFunction() throws IOException {
 
-        List<T> expected = Stream.generate(codecGen.gen)
-                .limit(rndInt(10))
+        FuncAndGen<T> funcAndGen = RndCodec.rndCodecFunctionAndGen();
+
+        List<T> inputs = Stream.generate(funcAndGen.gen)
+                .limit(rndInt(1, 11))
                 .collect(Collectors.toList());
 
-        Codec<T> codec = codecGen.codec;
+        CodecFunction<T> function = funcAndGen.func;
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-
-        try (EncoderStream<T> eos = codec.wrap(bos)) {
-            expected.forEach(eos::write);
+        for (T input : inputs) {
+            function.write(input, bos);
         }
 
         ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
 
-        try (DecoderStream<T> dos = codec.wrap(bis)) {
-            for (T exp : expected) {
-                T act = dos.read();
-                TestUtil.assertEq(exp, act);
-            }
+        for (T expected : inputs) {
+            T actual = function.read(bis);
+            TestUtil.assertEq(expected, actual);
         }
-    }
-
-    @RepeatedTest(1000)
-    <T> void testRandomCodecAssemblySingle() {
-        CodecAndGen<T> codecGen = RndCodec.rndCodec();
-        T expected = codecGen.gen.get();
-        Codec<T> codec = codecGen.codec;
-        byte[] encoded = codec.encode(expected);
-        T actual = codec.decode(encoded);
-        TestUtil.assertEq(expected, actual);
     }
 }

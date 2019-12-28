@@ -16,28 +16,30 @@
 
 package com.github.sabirove.codec.filter;
 
-import java.io.*;
-import java.security.SecureRandom;
-
+import com.github.sabirove.codec.test_util.Rnd;
+import com.github.sabirove.codec.test_util.TestInputStream;
+import com.github.sabirove.codec.test_util.TestOutputStream;
+import com.github.sabirove.codec.util.StrictInputStream;
 import org.junit.jupiter.api.RepeatedTest;
-import com.github.sabirove.codec.*;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 abstract class CodecFilterTestCase {
-    private final SecureRandom rnd = new SecureRandom();
 
     protected abstract CodecFilter getFilter();
 
-    protected void testEncoded(byte[] input, byte[] encoded) { }
-
     protected byte[] getInputBytes() {
-        byte[] input = new byte[Rnd.rndInt(8192)];
-        rnd.nextBytes(input);
-        return input;
+        return Rnd.rndBytes(9000);
     }
 
+    protected void testEncoded(byte[] input, byte[] encoded) { }
+
+    @SuppressWarnings("resource")
     @RepeatedTest(100)
     final void testFilter() throws IOException {
         CodecFilter filter = getFilter();
@@ -63,14 +65,10 @@ abstract class CodecFilterTestCase {
 
         byte[] decoded = new byte[input.length];
 
-        //we explicitly read like that, b.c. there's InflateInputStream
-        //that will fail to read all data otherwise, e.g. with plain filteredTis.read(byte[])
-        int b;
-        int i = 0;
-        while ((b = filteredTis.read()) != -1) {
-            decoded[i++] = (byte) b;
-        }
-
+        //wrap to StrictInputStream, b.c. there're some "framed" InputStreams used (like InflateInputStream)
+        //that will may fail to read all data at once with plain read(byte[]) call
+        int read = new StrictInputStream(filteredTis).read(decoded);
+        assertEquals(input.length, read);
         assertArrayEquals(input, decoded);
 
         filteredTis.close();

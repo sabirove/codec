@@ -22,8 +22,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.*;
 import java.util.stream.*;
 
+import com.github.sabirove.codec.test_util.Rnd;
+import com.github.sabirove.codec.test_util.State;
+import com.github.sabirove.codec.test_util.TestUtil;
 import org.junit.jupiter.api.RepeatedTest;
-import com.github.sabirove.codec.*;
 
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
@@ -59,7 +61,7 @@ class StateInputOutputStreamTest {
 
     @SuppressWarnings("unchecked")
     @RepeatedTest(100)
-    void testRandomObjectSerialization() {
+    void testRandomObjectsSerialization() {
         //random list of specs
         List<Spec> specs = IntStream.generate(() -> Rnd.rndInt(0, this.specs.size()))
                 .limit(Rnd.rndInt(50))

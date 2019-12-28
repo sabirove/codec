@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-package com.github.sabirove.codec;
+package com.github.sabirove.codec.test_util;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
 
-
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 public class TestUtil {
@@ -41,6 +39,14 @@ public class TestUtil {
             Throwable target = e instanceof UncheckedIOException ? e.getCause() : e;
             assertTrue(target instanceof IOException, "IOException was expected, got e=" + e);
             assertSame(causeType, target.getClass());
+        }
+    }
+
+    public static <T> void assertEq(T expected, T actual) {
+        if (expected instanceof byte[]) {
+            assertArrayEquals((byte[]) expected, (byte[]) actual);
+        } else {
+            assertEquals(expected, actual);
         }
     }
 }

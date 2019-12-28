@@ -16,7 +16,7 @@
 
 package com.github.sabirove.codec.filter;
 
-import com.github.sabirove.codec.Rnd;
+import com.github.sabirove.codec.test_util.Rnd;
 
 
 import static org.junit.jupiter.api.Assertions.assertTrue;

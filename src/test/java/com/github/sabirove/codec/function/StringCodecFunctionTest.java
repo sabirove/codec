@@ -18,13 +18,13 @@ package com.github.sabirove.codec.function;
 
 import java.nio.charset.StandardCharsets;
 
-import com.github.sabirove.codec.Rnd;
+import com.github.sabirove.codec.test_util.Rnd;
 
 final class StringCodecFunctionTest extends CodecFunctionTestCase<String> {
 
     @Override
     CodecFunction<String> getFunction() {
-        return CodecFunctions.string(StandardCharsets.UTF_8);
+        return CodecFunctions.stringSerializing(StandardCharsets.UTF_8);
     }
 
     @Override

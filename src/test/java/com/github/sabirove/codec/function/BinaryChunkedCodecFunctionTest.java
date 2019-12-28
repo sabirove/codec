@@ -21,8 +21,11 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 
+import com.github.sabirove.codec.test_util.Rnd;
+import com.github.sabirove.codec.test_util.TestInputStream;
+import com.github.sabirove.codec.test_util.TestOutputStream;
+import com.github.sabirove.codec.test_util.TestUtil;
 import org.junit.jupiter.api.RepeatedTest;
-import com.github.sabirove.codec.*;
 
 
 import static org.junit.jupiter.api.Assertions.*;

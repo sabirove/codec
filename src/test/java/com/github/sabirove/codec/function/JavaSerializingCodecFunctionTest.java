@@ -16,7 +16,7 @@
 
 package com.github.sabirove.codec.function;
 
-import com.github.sabirove.codec.State;
+import com.github.sabirove.codec.test_util.State;
 
 final class JavaSerializingCodecFunctionTest extends CodecFunctionTestCase<State> {
 

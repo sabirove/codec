@@ -16,11 +16,10 @@
 
 package com.github.sabirove.codec.filter;
 
-final class Base64MimeFilterTest extends Base64FilterTest {
-
+final class Base64MimeFilterTest extends Base64FilterTestCase {
     @Override
     protected String getValidChars() {
-        return super.getValidChars() + "\r\n";
+        return BASE64_NO_PADDING_CHARS_MIME;
     }
 
     @Override

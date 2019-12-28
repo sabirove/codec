@@ -16,58 +16,61 @@
 
 package com.github.sabirove.codec.filter;
 
-import java.io.*;
-import java.util.*;
-
 import org.junit.jupiter.api.Test;
 
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class CodecFilterChainApplicationOrderTest {
+class CodecFilterChainApplicationOrderTest {
 
-    private CodecFilter probe(String name,
-                              List<CodecFilter> filterWrite,
-                              List<CodecFilter> filterRead,
-                              List<CodecFilter> doWrite,
-                              List<CodecFilter> doRead
-    ) {
-        return new CodecFilter() {
-            @Override
-            public OutputStream filter(OutputStream out) {
-                CodecFilter f = this;
-                filterWrite.add(f);
-                return new OutputStream() {
-                    @Override
-                    public void write(int b) throws IOException {
-                        doWrite.add(f);
-                        out.write(b);
-                    }
-                };
-            }
+    private static final class CodecFilterProbe extends CodecFilter {
+        private final List<CodecFilter> filterWrite;
+        private final List<CodecFilter> filterRead;
+        private final List<CodecFilter> doWrite;
+        private final List<CodecFilter> doRead;
 
-            @Override
-            public InputStream filter(InputStream in) {
-                CodecFilter f = this;
-                filterRead.add(f);
-                return new InputStream() {
-                    @Override
-                    public int read() throws IOException {
-                        doRead.add(f);
-                        return in.read();
-                    }
-                };
-            }
+        CodecFilterProbe(List<CodecFilter> filterWrite,
+                         List<CodecFilter> filterRead,
+                         List<CodecFilter> doWrite,
+                         List<CodecFilter> doRead) {
+            this.filterWrite = filterWrite;
+            this.filterRead = filterRead;
+            this.doWrite = doWrite;
+            this.doRead = doRead;
+        }
 
-            @Override
-            public String toString() {
-                return name;
-            }
-        };
+        @Override
+        public OutputStream filter(OutputStream out) {
+            CodecFilter f = this;
+            filterWrite.add(f);
+            return new OutputStream() {
+                @Override
+                public void write(int b) throws IOException {
+                    doWrite.add(f);
+                    out.write(b);
+                }
+            };
+        }
+
+        @Override
+        public InputStream filter(InputStream in) {
+            CodecFilter f = this;
+            filterRead.add(f);
+            return new InputStream() {
+                @Override
+                public int read() throws IOException {
+                    doRead.add(f);
+                    return in.read();
+                }
+            };
+        }
     }
 
-
-    @SuppressWarnings({"MisorderedAssertEqualsArguments", "resource"})
+    @SuppressWarnings("resource")
     @Test
     void chainTest() throws IOException {
         List<CodecFilter> filterWrite = new ArrayList<>();
@@ -75,12 +78,10 @@ public class CodecFilterChainApplicationOrderTest {
         List<CodecFilter> doWrite = new ArrayList<>();
         List<CodecFilter> doRead = new ArrayList<>();
 
-        CodecFilter p1 = probe("p1", filterWrite, filterRead, doWrite, doRead);
-        CodecFilter p2 = probe("p2", filterWrite, filterRead, doWrite, doRead);
-        CodecFilter p3 = probe("p3", filterWrite, filterRead, doWrite, doRead);
-
-        CodecFilter p1p2 = p1.chain(p2);
-        CodecFilter p1p2p3 = CodecFilter.chain(p1p2, p3);
+        CodecFilter p1 = new CodecFilterProbe(filterWrite, filterRead, doWrite, doRead);
+        CodecFilter p2 = new CodecFilterProbe(filterWrite, filterRead, doWrite, doRead);
+        CodecFilter p3 = new CodecFilterProbe(filterWrite, filterRead, doWrite, doRead);
+        CodecFilter p1p2p3 = CodecFilter.chain(p1, p2, p3);
 
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         OutputStream filterOut = p1p2p3.filter(b);
@@ -98,5 +99,4 @@ public class CodecFilterChainApplicationOrderTest {
         assertEquals(expectedOperationOrder, doWrite);
         assertEquals(expectedOperationOrder, doRead);
     }
-
 }

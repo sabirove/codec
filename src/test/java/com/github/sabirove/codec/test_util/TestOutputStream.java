@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.sabirove.codec;
+package com.github.sabirove.codec.test_util;
 
 import java.io.ByteArrayOutputStream;
 

@@ -17,6 +17,7 @@
 package com.github.sabirove.codec.filter;
 
 
+import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -24,17 +25,20 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 abstract class Base64FilterTestCase extends CodecFilterTestCase {
+    static final String BASE64_NO_PADDING_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    static final String BASE64_NO_PADDING_CHARS_MIME = BASE64_NO_PADDING_CHARS + "\r\n";
+    static final String BASE64_NO_PADDING_CHARS_URL = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
 
     @SuppressWarnings({"AbstractMethodCallInConstructor", "OverridableMethodCallDuringObjectConstruction"})
-    private final Set<Integer> characters = getValidChars().chars().boxed().collect(Collectors.toSet());
+    private final int[] characters = getValidChars().chars().sorted().toArray();
 
     protected abstract String getValidChars();
 
     @Override
     protected final void testEncoded(byte[] input, byte[] encoded) {
-        Set<Integer> cc = this.characters;
+        final int[] cc = this.characters;
         for (byte b : encoded) {
-            assertTrue(cc.contains((int) b));
+            assertTrue(Arrays.binarySearch(cc, b) >= 0);
         }
     }
 }

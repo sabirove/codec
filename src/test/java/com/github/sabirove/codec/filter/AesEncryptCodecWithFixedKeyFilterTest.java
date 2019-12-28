@@ -16,16 +16,10 @@
 
 package com.github.sabirove.codec.filter;
 
-import java.security.SecureRandom;
+import com.github.sabirove.codec.test_util.Rnd;
 
 final class AesEncryptCodecWithFixedKeyFilterTest extends EncryptCodecFilterTestCase {
-    private final byte[] key;
-
-    AesEncryptCodecWithFixedKeyFilterTest() {
-        byte[] bb = new byte[16];
-        new SecureRandom().nextBytes(bb);
-        this.key = bb;
-    }
+    private final byte[] key = Rnd.rndBytes(16, 17);
 
     @Override
     protected CodecFilter getFilter() {
