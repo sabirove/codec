@@ -16,12 +16,15 @@
 
 package com.github.sabirove.codec;
 
+import com.github.sabirove.codec.filter.CodecBufferSpec;
+import com.github.sabirove.codec.filter.CodecFilter;
+import com.github.sabirove.codec.filter.CodecFilters;
+import com.github.sabirove.codec.function.CodecFunction;
+import com.github.sabirove.codec.util.StrictInputStream;
+
 import java.io.*;
 
-import com.github.sabirove.codec.filter.*;
-import com.github.sabirove.codec.function.CodecFunction;
-
-
+import static com.github.sabirove.codec.util.CodecUtil.checkNotNull;
 import static com.github.sabirove.codec.util.CodecUtil.throwUnchecked;
 
 /**
@@ -79,7 +82,8 @@ public final class Codec<T> {
      */
     public EncoderStream<T> wrap(OutputStream os) {
         try {
-            return new EncoderStream<>(filter.filter(os), function);
+            OutputStream filtered = filter.filter(os);
+            return new EncoderStream<>(filtered, function);
         } catch (IOException e) {
             return throwUnchecked(e);
         }
@@ -93,7 +97,9 @@ public final class Codec<T> {
      */
     public DecoderStream<T> wrap(InputStream is) {
         try {
-            return new DecoderStream<>(filter.filter(is), function);
+            InputStream filtered = filter.filter(is);
+            InputStream filteredStrict = StrictInputStream.wrap(filtered);
+            return new DecoderStream<>(filteredStrict, function);
         } catch (IOException e) {
             return throwUnchecked(e);
         }
@@ -113,10 +119,10 @@ public final class Codec<T> {
     public static final class Builder<T> {
         private final CodecFunction<T> function;
         private CodecFilter filter = CodecFilters.noOp();
-        private CodecFilter bufferSpec = CodecBufferSpec.ofDefaultSize();
+        private CodecBufferSpec bufferSpec = CodecBufferSpec.ofDefaultSize();
 
         private Builder(CodecFunction<T> function) {
-            this.function = function;
+            this.function = checkNotNull(function);
         }
 
         /**
@@ -129,7 +135,7 @@ public final class Codec<T> {
          * </ul>
          */
         public Builder<T> withFilter(CodecFilter filter) {
-            this.filter = filter;
+            this.filter = checkNotNull(filter);
             return this;
         }
 
@@ -140,6 +146,9 @@ public final class Codec<T> {
          * @apiNote do not use {@link CodecBufferSpec} as part of the filter chain.
          */
         public Builder<T> withFilterChain(CodecFilter... chain) {
+            for (CodecFilter codecFilter : checkNotNull(chain)) {
+                checkNotNull(codecFilter);
+            }
             return withFilter(CodecFilter.chain(chain));
         }
 
@@ -147,7 +156,7 @@ public final class Codec<T> {
          * Specify the buffering strategy to apply when doing IO with this codec.
          */
         public Builder<T> withBuffer(CodecBufferSpec bufferSpec) {
-            this.bufferSpec = bufferSpec;
+            this.bufferSpec = checkNotNull(bufferSpec);
             return this;
         }
 
@@ -155,12 +164,12 @@ public final class Codec<T> {
          * Do not apply buffering when doing IO with this codec.
          */
         public Builder<T> withNoBuffer() {
-            this.bufferSpec = CodecFilters.noOp();
+            this.bufferSpec = CodecBufferSpec.noBuffer();
             return this;
         }
 
         public Codec<T> build() {
-            CodecFilter chain = filter.chain(bufferSpec);
+            CodecFilter chain = bufferSpec == CodecBufferSpec.noBuffer() ? filter : filter.chain(bufferSpec);
             return new Codec<>(function, chain);
         }
     }
