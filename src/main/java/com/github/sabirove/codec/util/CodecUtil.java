@@ -23,6 +23,11 @@ public final class CodecUtil {
 
     private CodecUtil() { }
 
+    public static <T> T checkNotNull(T value) {
+        checkArgument(value != null, "value can't be null");
+        return value;
+    }
+
     public static void checkArgument(boolean condition, String message) {
         if (!condition) {
             throw new IllegalArgumentException(message);
