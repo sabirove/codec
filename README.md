@@ -63,7 +63,7 @@ that was used to write the data.
 - [About](#about)
 - [Codec function](#codec-function)
 - [Codec filter](#codec-filter)
-- [API flavours](#api-flavours)
+- [API](#api)
 - [Buffering](#buffering)
 - [Serialization functions](#serialization-functions)
 - [AES encryption filter](#aes-encryption-filter)
@@ -76,10 +76,10 @@ type operating on top of the `java.io` streams: *encoding* an object of type `<T
 an `OutputStream` while  *decoding* is a complementary operation of *deserializing* such object against an `InputStream`
 holding the encoded contents.
 
-`Codec` consists of [CodecFunction](#codec-function) and zero to many [CodecFilter](#codec-filter)s forming the following
-processing pipeline:
-* Encoding: `T -> CodecFunction<T> -> CodecFilter1 -> CodecFilter2 -> ... CodecFilterN -> OutputStream`  
-* Decoding: `T <- CodecFunction<T> <- CodecFilter1 <- CodecFilter2 <- ... CodecFilterN <- InputStream`
+`Codec` consists of [CodecFunction](#codec-function) and zero to many [CodecFilter](#codec-filter)s (including an optional 
+[CodecBufferSpec](#buffering)) forming the following processing pipeline:
+* Encoding: `T -> CodecFunction<T> -> CodecFilter1 -> CodecFilter2 -> ... CodecFilterN -> BufferedOutputStream (optional) -> OutputStream`  
+* Decoding: `T <- CodecFunction<T> <- CodecFilter1 <- CodecFilter2 <- ... CodecFilterN <- BufferedInputStream (optional) <- InputStream`
 
 In the simplest case `Codec` consists of just a [CodecFunction](#codec-function) and is used to serialize and 
 deserialize objects without extra byte stream transformations.  
@@ -99,7 +99,6 @@ The number of predefined `CodecFunction` implementations can be obtained with
 - `CodecFunctions.binary(..)`: IO on plain byte arrays of arbitrary size
 - `CodecFunctions.binaryChunked(..)`: IO on plain byte arrays of fixed size
 - `CodecFunctions.string(..)`: IO on strings
-
 
 
 #### Codec filter
@@ -129,7 +128,7 @@ The number of predefined `CodecFilter` implementations can be obtained with
 - `CodecFilters.encodeWithBase64Mime()`: apply `Base64MIME` encode/decode on top of the target streams
 - `CodecFilters.encryptWithAes()`: apply `AES` encrypt/decrypt on top of the target streams
 
-#### API flavours
+#### API
 
 [Codec](src/main/java/com.github.sabirove/codec/Codec.java) features two favours of API:
 
@@ -166,12 +165,12 @@ which are a pair of light wrappers used to execute reads and writes against the 
 
 #### Buffering
 
-IO buffering is addressed with special kind of `CodecFilter`: [CodecBufferSpec](src/main/java/com.github.sabirove/codec/filter/CodecBufferSpec.java),
-which is used as an *edge* filter applying the `BufferedInputStream/BufferedOutputStream` wrappers on top of the
-target streams.  
+IO buffering is addressed with [CodecBufferSpec](src/main/java/com.github.sabirove/codec/filter/CodecBufferSpec.java) 
+which is a special kind of `CodecFilter` placed on the *outer edge* of the filter chain to apply
+`BufferedInputStream/BufferedOutputStream` wrappers on top of the target streams.  
 Obtain with factory `CodecBufferSpec.ofSize(..)` specifying the input/output buffer sizes in bytes or opt in for the
 default sized one with `CodecBufferSpec.ofDefaultSize()`. Certain kinds of `Input/Output -Stream` types can be excluded
-from buffering application by means of `CodecBufferSpec.withXXXStreamExclusions(..)` calls.
+from buffering application by means of `.withXXXStreamExclusions(..)` or `.addXXXStreamExclusions(..)` instance calls.
 
 #### Serialization functions
 
@@ -226,6 +225,12 @@ Specs:
 - 96 bit initialization vector: optimal length, random value is generated per each encryption
 - 128 bit authentication tag
 
+Limitations:  
+  When using this filter authentication tag is computed on the whole stream and is flushed at the very end
+  when the underlying `CipherOutputStream` is closed.   
+  Thus in order to validate the tag the whole encoded payload should be fully read back (decoded) and then the 
+  input stream should be closed triggering the underlying `CipherInputStream` to read and validate the tag 
+  from whatever leftover bytes in the stream. 
 
 #### Noteworthy application examples
 
@@ -240,10 +245,10 @@ Assemble the `Codec` with the following `filter chain`: serialization -> encrypt
                     ).build();
 
 ```
-Now such `Codec` can be used to encode some *sensitive* _state_ object into the encrypted/encoded string
-that could be safely passed around on the web by means of, for instance, request query parameters.
+Such `Codec` can be used to encode some *sensitive* _state_ into a encrypted/encoded string that could be safely
+passed around on the web by means of, for instance, request query parameters.
 This can be useful when implementing a two-way negotiation process (like user registration/confirmation 
-or OAuth consent flows) which allows to achieve two major goals:
+or OAuth consent flows) allowing to achieve two major goals:
 - stateless operation: no need to keep the state of the user request between the two consecutive steps of the process
-- validating the authenticity of the following "return" request: payload can be properly decrypted only if it wasn't 
-tampered with and only with your private key.
+- validating authenticity of the following "return" request: payload can be properly decrypted only with 
+the private key it was encrypted with and so long as it wasn't tampered with.
