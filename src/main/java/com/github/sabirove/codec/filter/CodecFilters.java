@@ -16,6 +16,8 @@
 
 package com.github.sabirove.codec.filter;
 
+import com.github.sabirove.codec.util.base64.Base64InputStream;
+
 import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.util.Base64;
@@ -34,15 +36,18 @@ public final class CodecFilters {
     );
     private static final CodecFilter BASE64 = CodecFilter.of(
             Base64.getEncoder().withoutPadding()::wrap,
-            Base64.getDecoder()::wrap
+            //Base64.getDecoder()::wrap <- bugged: https://bugs.openjdk.java.net/browse/JDK-8222187
+            Base64InputStream::new
     );
     private static final CodecFilter BASE64_URL = CodecFilter.of(
             Base64.getUrlEncoder().withoutPadding()::wrap,
-            Base64.getUrlDecoder()::wrap
+            //Base64.getUrlDecoder()::wrap <- bugged: https://bugs.openjdk.java.net/browse/JDK-8222187
+            Base64InputStream::new
     );
     private static final CodecFilter BASE64_MIME = CodecFilter.of(
             Base64.getMimeEncoder().withoutPadding()::wrap,
-            Base64.getMimeDecoder()::wrap
+            //Base64.getMimeDecoder()::wrap <- bugged: https://bugs.openjdk.java.net/browse/JDK-8222187
+            Base64InputStream::new
     );
     private static final CodecFilter COMPRESS_DEFLATE = CodecFilter.of(
             os -> new DeflaterOutputStream(os, true),

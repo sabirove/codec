@@ -72,6 +72,12 @@ jacocoTestReport {
         xml.enabled = true // coveralls plugin depends on xml format report
         html.enabled = true
     }
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            //exclude code reused from common-codec lib from coverage report
+            fileTree(dir: it, exclude: 'com/github/sabirove/codec/util/base64/**')
+        }))
+    }
 }
 
 coveralls {
