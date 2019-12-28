@@ -20,6 +20,7 @@ import com.github.sabirove.codec.test_util.Rnd;
 import com.github.sabirove.codec.test_util.TestInputStream;
 import com.github.sabirove.codec.test_util.TestOutputStream;
 import com.github.sabirove.codec.util.StrictInputStream;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.junit.jupiter.api.RepeatedTest;
 
 import java.io.IOException;
@@ -29,6 +30,7 @@ import java.io.OutputStream;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@SuppressFBWarnings("OS_OPEN_STREAM")
 abstract class CodecFilterTestCase {
 
     protected abstract CodecFilter getFilter();

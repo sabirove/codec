@@ -17,6 +17,7 @@
 package com.github.sabirove.codec.util;
 
 import com.github.sabirove.codec.test_util.Rnd;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
@@ -31,6 +32,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SuppressWarnings({"resource", "ResultOfMethodCallIgnored"})
+@SuppressFBWarnings({"OS_OPEN_STREAM", "RR_NOT_CHECKED"})
 class StrictInputStreamTest {
 
     @RepeatedTest(50)

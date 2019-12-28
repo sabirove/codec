@@ -130,7 +130,7 @@ The number of predefined `CodecFilter` implementations can be obtained with
 
 #### API
 
-[Codec](src/main/java/com.github.sabirove/codec/Codec.java) features two favours of API:
+[Codec](src/main/java/com.github.sabirove/codec/Codec.java) features two flavours of API:
 
 - **Single value oriented**
 

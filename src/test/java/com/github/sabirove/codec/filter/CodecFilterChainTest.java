@@ -18,6 +18,7 @@ package com.github.sabirove.codec.filter;
 
 import com.github.sabirove.codec.test_util.RndCodec;
 import com.github.sabirove.codec.util.StrictInputStream;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.junit.jupiter.api.RepeatedTest;
 
 import java.io.*;
@@ -30,6 +31,7 @@ import static com.github.sabirove.codec.test_util.Rnd.rndInt;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@SuppressFBWarnings("OS_OPEN_STREAM")
 class CodecFilterChainTest {
 
     @RepeatedTest(500)
