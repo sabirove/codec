@@ -35,6 +35,6 @@ final class StringCodecFunction extends CodecFunction<String> {
     @Override
     public String read(InputStream in) throws IOException {
         byte[] bytes = CodecFunctions.binary().read(in);
-        return new String(bytes, charset);
+        return bytes.length == 0 ? "" : new String(bytes, charset);
     }
 }

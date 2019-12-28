@@ -16,14 +16,14 @@
 
 package com.github.sabirove.codec.function;
 
+import com.github.sabirove.codec.util.StateInputStream;
+import com.github.sabirove.codec.util.StateOutputStream;
+
 import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
-
-import com.github.sabirove.codec.util.StateInputStream;
-import com.github.sabirove.codec.util.StateOutputStream;
 
 /**
  * Standard {@link CodecFunction} implementations.
@@ -69,7 +69,7 @@ public final class CodecFunctions {
     }
 
     /**
-     * Codec function reading and writing plain byte arrays.
+     * Codec function for IO with plain byte arrays.
      * Writes array lengths so that exactly the same arrays can be read back from the stream.
      *
      * @apiNote for a more specific use case of writing chunked byte arrays use {@link #binaryChunked(int, boolean)}.
@@ -79,7 +79,7 @@ public final class CodecFunctions {
     }
 
     /**
-     * {@link #binary()} analog that writes and reads against the stream in chunks of the specified size.
+     * {@link #binary()} analog that writes and reads bytes in chunks of specified size.
      * <ul>
      *      <li>If {@code strict} mode is on only the chunks of the exact {@code chinkSize} can be written or read.</li>
      *      <li>If {@code strict} mode is off chunks of any size can be written, while reads are is still in chunks
@@ -95,9 +95,9 @@ public final class CodecFunctions {
     }
 
     /**
-     * Codec function reading and writing the strings with the specified {@link Charset}.
+     * Codec function for IO with strings using specified encoding.
      */
-    public static CodecFunction<String> string(Charset charset) {
+    public static CodecFunction<String> stringSerializing(Charset charset) {
         switch (charset.name()) {
             case "UTF-8": return STRING_UTF8;
             case "UTF-16": return STRING_UTF16;
@@ -106,4 +106,10 @@ public final class CodecFunctions {
         }
     }
 
+    /**
+     * Codec function for IO with strings using UTF-8 encoding.
+     */
+    public static CodecFunction<String> stringSerializing() {
+        return STRING_UTF8;
+    }
 }
