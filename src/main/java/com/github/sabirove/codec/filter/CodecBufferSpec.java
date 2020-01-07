@@ -20,8 +20,6 @@ package com.github.sabirove.codec.filter;
 import com.github.sabirove.codec.Codec;
 
 import java.io.*;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -30,8 +28,8 @@ import static com.github.sabirove.codec.util.CodecUtil.checkArgument;
 import static com.github.sabirove.codec.util.CodecUtil.checkState;
 
 /**
- * Specialized {@link CodecFilter} implementation used by a {@link Codec}
- * instance as the strategy to apply buffering on IO streams.
+ * Specialized {@link CodecFilter} implementation used as a strategy to apply buffering
+ * on top of the inbound/outbound IO streams.
  *
  * @apiNote intended to be used only as part of the {@link Codec.Builder} API.
  */
@@ -114,46 +112,54 @@ public final class CodecBufferSpec extends CodecFilter {
     }
 
     /**
-     * Get the copy of this instance configured with the specified {@link OutputStream} types to be excluded from buffering.
+     * Get the copy of this instance configured with the specified {@link OutputStream} types
+     * to be excluded from buffering.
      */
-    public CodecBufferSpec withOutputStreamExclusions(Collection<Class<? extends OutputStream>> outExclusions) {
+    @SafeVarargs
+    public final CodecBufferSpec withOutputStreamExclusions(Class<? extends OutputStream>... outExclusions) {
         checkState(outBufferSize > 0,
                 "output buffering is disabled, no point to specify exclusions");
-        return new CodecBufferSpec(inBufferSize, outBufferSize, new HashSet<>(outExclusions), inExclusions);
+        Set<Class<? extends OutputStream>> exclusions = Stream.of(outExclusions).collect(Collectors.toSet());
+        return new CodecBufferSpec(inBufferSize, outBufferSize, exclusions, inExclusions);
     }
 
     /**
-     * Get the copy of this instance configured with the specified {@link InputStream} types to be excluded from buffering.
+     * Get the copy of this instance configured with the specified {@link InputStream} types
+     * to be excluded from buffering.
      */
-    public CodecBufferSpec withInputStreamExclusions(Collection<Class<? extends InputStream>> inExclusions) {
+    @SafeVarargs
+    public final CodecBufferSpec withInputStreamExclusions(Class<? extends InputStream>... inExclusions) {
         checkState(inBufferSize > 0,
                 "input buffering is disabled, no point to specify exclusions");
-        return new CodecBufferSpec(inBufferSize, outBufferSize, outExclusions, new HashSet<>(inExclusions));
+        Set<Class<? extends InputStream>> exclusions = Stream.of(inExclusions).collect(Collectors.toSet());
+        return new CodecBufferSpec(inBufferSize, outBufferSize, outExclusions, exclusions);
     }
 
     /**
-     * Get the copy of this instance configured with the specified {@link OutputStream} types added to the set
-     * of types to be excluded from buffering.
+     * Get the copy of this instance configured with the specified {@link OutputStream} types
+     * added to the set of types to be excluded from buffering.
      */
-    public CodecBufferSpec addOutputStreamExclusions(Collection<Class<? extends OutputStream>> outExclusions) {
-        checkState(outBufferSize > 0,
-                "output buffering is disabled, no point to specify exclusions");
-        Set<Class<? extends OutputStream>> all = new HashSet<>(this.outExclusions.size() + outExclusions.size());
-        all.addAll(this.outExclusions);
-        all.addAll(outExclusions);
-        return new CodecBufferSpec(inBufferSize, outBufferSize, all, inExclusions);
+    @SuppressWarnings("unchecked")
+    @SafeVarargs
+    public final CodecBufferSpec addOutputStreamExclusions(Class<? extends OutputStream>... outExclusions) {
+        return withOutputStreamExclusions(
+                Stream.concat(this.outExclusions.stream(), Stream.of(outExclusions))
+                        .distinct()
+                        .toArray(Class[]::new)
+        );
     }
 
     /**
-     * Get the copy of this instance configured with the specified {@link InputStream} types added to the set
-     * of types to be excluded from buffering.
+     * Get the copy of this instance configured with the specified {@link InputStream} types
+     * added to the set of types to be excluded from buffering.
      */
-    public CodecBufferSpec addInputStreamExclusions(Collection<Class<? extends InputStream>> inExclusions) {
-        checkState(inBufferSize > 0,
-                "input buffering is disabled, no point to specify exclusions");
-        Set<Class<? extends InputStream>> all = new HashSet<>(this.inExclusions.size() + inExclusions.size());
-        all.addAll(this.inExclusions);
-        all.addAll(inExclusions);
-        return new CodecBufferSpec(inBufferSize, outBufferSize, outExclusions, all);
+    @SuppressWarnings("unchecked")
+    @SafeVarargs
+    public final CodecBufferSpec addInputStreamExclusions(Class<? extends InputStream>... inExclusions) {
+        return withInputStreamExclusions(
+                Stream.concat(this.inExclusions.stream(), Stream.of(inExclusions))
+                        .distinct()
+                        .toArray(Class[]::new)
+        );
     }
 }

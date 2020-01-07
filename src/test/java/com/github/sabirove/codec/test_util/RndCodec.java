@@ -43,16 +43,16 @@ public class RndCodec {
     @SuppressWarnings("unchecked")
     private static final Supplier<CodecBufferSpec>[] BUFFER_SPECS_VARIETY = new Supplier[]{
             () -> CodecBufferSpec.ofDefaultSize()
-                    .withInputStreamExclusions(Collections.emptySet())
-                    .withOutputStreamExclusions(Collections.emptySet()),
+                    .withInputStreamExclusions()
+                    .withOutputStreamExclusions(),
             () -> CodecBufferSpec.ofSize(rndInt(1, 8192), rndInt(1, 8192))
-                    .withInputStreamExclusions(Collections.emptySet())
-                    .withOutputStreamExclusions(Collections.emptySet()),
+                    .withInputStreamExclusions()
+                    .withOutputStreamExclusions(),
             () -> CodecBufferSpec.ofSize(0, 0),
             () -> CodecBufferSpec.ofSize(0, rndInt(1, 3894))
-                    .withOutputStreamExclusions(Collections.emptySet()),
+                    .withOutputStreamExclusions(),
             () -> CodecBufferSpec.ofSize(rndInt(1, 7331), 0)
-                    .withInputStreamExclusions(Collections.emptySet())
+                    .withInputStreamExclusions()
     };
 
     private static final FuncAndGen<?>[] FUNC_VS_GEN_VARIETY = new FuncAndGen[] {
