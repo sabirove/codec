@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @SuppressWarnings({"resource", "rawtypes"})
 class StateInputOutputStreamTest {
 
-    @RepeatedTest(100)
+    @RepeatedTest(500)
     void testStateSerialization() {
 
         List<State> states = Stream.generate(State::random)
@@ -60,7 +60,7 @@ class StateInputOutputStreamTest {
 
 
     @SuppressWarnings("unchecked")
-    @RepeatedTest(100)
+    @RepeatedTest(500)
     void testRandomObjectsSerialization() {
         //random list of specs
         List<Spec> specs = IntStream.generate(() -> Rnd.rndInt(0, this.specs.size()))

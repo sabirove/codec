@@ -180,7 +180,7 @@ public enum Rnd {
     public static <K, V> Map<K, V> rndMap(int bound, Supplier<K> kSupplier, Supplier<V> vSupplier) {
         return Stream.generate(() -> null)
                 .limit(bound)
-                .collect(Collectors.toMap(none -> kSupplier.get(), none -> vSupplier.get()));
+                .collect(Collectors.toMap(none -> kSupplier.get(), none -> vSupplier.get(), (v, v2) -> v));
     }
 
     public static BigDecimal rndBigDecimal() {
