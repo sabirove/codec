@@ -26,8 +26,8 @@ import java.io.*;
  * or EOF is reached (as per {@link InputStream#read()} returning {@code -1}) in which case
  * throws {@link EOFException} to signal a failure.
  *
- * <p>This is rather specific but more optimal approach for the target use case compared to common
- * practice of wrapping the input with {@link BufferedInputStream} when no actual buffering is required.
+ * <p>This is rather specific but more optimal approach to deal with "framed" input sources compared to common
+ * practice of wrapping the input source with {@link BufferedInputStream} when no actual buffering is required.
  */
 public final class StrictInputStream extends FilterInputStream {
     public StrictInputStream(InputStream in) {
@@ -38,15 +38,7 @@ public final class StrictInputStream extends FilterInputStream {
     public int read(byte[] b, int off, int len) throws IOException {
         CodecUtil.checkArgument(off >= 0 && off + len <= b.length, "illegal range");
 
-        if (len == 0) {
-            return 0;
-        }
-
-        int read = in.read(b, off, len);
-
-        if (read == -1) {
-            throw new EOFException();
-        }
+        int read = 0;
 
         while (read < len) {
             int next = in.read(b, off + read, len - read);
@@ -59,10 +51,10 @@ public final class StrictInputStream extends FilterInputStream {
         return read;
     }
 
+    /**
+     * Wrap the provided {@link InputStream} with StrictInputStream.
+     */
     public static InputStream wrap(InputStream in) {
-        return in instanceof StrictInputStream ||
-                in instanceof BufferedInputStream ||
-                in instanceof ByteArrayInputStream
-                ? in : new StrictInputStream(in);
+        return in instanceof StrictInputStream ? in : new StrictInputStream(in);
     }
 }

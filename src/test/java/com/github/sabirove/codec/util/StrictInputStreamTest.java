@@ -31,7 +31,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SuppressWarnings({"resource", "ResultOfMethodCallIgnored"})
+@SuppressWarnings({"resource", "ResultOfMethodCallIgnored", "ZeroLengthArrayAllocation"})
 @SuppressFBWarnings({"OS_OPEN_STREAM", "RR_NOT_CHECKED"})
 class StrictInputStreamTest {
 
@@ -56,12 +56,27 @@ class StrictInputStreamTest {
     }
 
     @Test
+    void testEmptyRead() throws IOException {
+        ByteArrayInputStream bis = new ByteArrayInputStream(new byte[0]);
+        StrictInputStream sis = new StrictInputStream(bis);
+        assertEquals(0, sis.read(new byte[10], 2, 0));
+        assertThrows(EOFException.class, () -> sis.read(new byte[10], 2, 1));
+    }
+
+    @Test
     void testStrictness() {
         ByteArrayInputStream bis = new ByteArrayInputStream(new byte[10]);
         StrictInputStream sis = new StrictInputStream(bis);
         assertThrows(EOFException.class, () -> sis.read(new byte[11]));
     }
 
+    @Test
+    void testRangeChecks() {
+        ByteArrayInputStream bis = new ByteArrayInputStream(new byte[10]);
+        StrictInputStream sis = new StrictInputStream(bis);
+        assertThrows(IllegalArgumentException.class, () -> sis.read(new byte[10], -1, 10));
+        assertThrows(IllegalArgumentException.class, () -> sis.read(new byte[10], 0, 11));
+    }
 
     private static final class FramedInputStream extends InputStream {
         private final Queue<ByteArrayInputStream> frames = new ArrayDeque<>();
