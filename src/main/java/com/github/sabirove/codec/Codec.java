@@ -21,16 +21,16 @@ import com.github.sabirove.codec.function.CodecFunction;
 import java.io.*;
 
 /**
- * Bidirectional IO function suitable to encode/decode single values and streams of values
- * of the specific type operating on top of the {@link java.io} streams.
+ * Bidirectional IO function suitable to encode/decode values of the specific type
+ * operating on top of the {@link java.io} streams.
  *
  * @param <T> target value type
- * @apiNote use {@link CodecBuilder#withFunction(CodecFunction)} builder to build an instance.
+ * @apiNote use {@link CodecBuilder#withFunction(CodecFunction)} to build an instance.
  */
 public interface Codec<T> {
 
     /**
-     * Wrap the provided {@link OutputStream} to write the stream of values encoded by this codec.
+     * Wrap the provided {@link OutputStream} to write values encoded by this codec.
      *
      * @throws UncheckedIOException wrapping the original {@link IOException} when wrap operation fails
      * @implNote shouldn't close the underlying stream
@@ -38,7 +38,7 @@ public interface Codec<T> {
     EncoderStream<T> wrap(OutputStream os);
 
     /**
-     * Wrap the provided {@link InputStream} to decode the stream of values previously encoded by this codec.
+     * Wrap the provided {@link InputStream} read values decoded by this codec.
      *
      * @throws UncheckedIOException wrapping the original {@link IOException} when wrap operation fails
      * @implNote shouldn't close the underlying stream
