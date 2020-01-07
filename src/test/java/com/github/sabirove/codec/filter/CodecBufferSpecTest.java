@@ -16,6 +16,7 @@
 
 package com.github.sabirove.codec.filter;
 
+import org.graalvm.compiler.options.SuppressFBWarnings;
 import org.junit.jupiter.api.Test;
 
 import java.io.BufferedInputStream;
@@ -28,6 +29,7 @@ import java.util.zip.InflaterOutputStream;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SuppressWarnings("resource")
+@SuppressFBWarnings(value = "RV_RETURN_VALUE_IGNORED_INFERRED", justification = "assertThrows")
 class CodecBufferSpecTest {
 
     @Test
