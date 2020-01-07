@@ -24,26 +24,30 @@ import java.io.*;
  *
  * <p> Implements bulk read in the loop until the target buffer is properly filled
  * or EOF is reached (as per {@link InputStream#read()} returning {@code -1}) in which case
- * throws {@link EOFException} to signal a failure.
+ * returns whatever amount of bytes were read (-1 if none).
  *
- * <p>This is rather specific but more optimal approach to deal with "framed" input sources compared to common
- * practice of wrapping the input source with {@link BufferedInputStream} when no actual buffering is required.
+ * <p>This is a more optimal approach to shield against "framed" input sources compared to the common practice
+ * of wrapping the source with {@link BufferedInputStream} when no actual buffering is required.
  */
-public final class StrictInputStream extends FilterInputStream {
-    public StrictInputStream(InputStream in) {
+public final class SafeInputStream extends FilterInputStream {
+    public SafeInputStream(InputStream in) {
         super(in);
     }
 
     @Override
     public int read(byte[] b, int off, int len) throws IOException {
-        CodecUtil.checkArgument(off >= 0 && off + len <= b.length, "illegal range");
+        if (off < 0 || off + len > b.length) {
+            throw new IllegalArgumentException(
+                    String.format("illegal range: array=[0, %s), range=[%s, %s]", b.length, off, off + len)
+            );
+        }
 
         int read = 0;
 
         while (read < len) {
             int next = in.read(b, off + read, len - read);
             if (next == -1) {
-                throw new EOFException();
+                return read > 0 ? read : -1;
             }
             read += next;
         }
@@ -52,9 +56,13 @@ public final class StrictInputStream extends FilterInputStream {
     }
 
     /**
-     * Wrap the provided {@link InputStream} with StrictInputStream.
+     * Wrap the provided {@link InputStream} excluding some {@link InputStream}
+     * implementations known to be "safe" as is.
      */
     public static InputStream wrap(InputStream in) {
-        return in instanceof StrictInputStream ? in : new StrictInputStream(in);
+        return in instanceof SafeInputStream ||
+                in instanceof ByteArrayInputStream ||
+                in instanceof BufferedInputStream
+                ? in : new SafeInputStream(in);
     }
 }

@@ -37,10 +37,10 @@ public final class CodecFunctions {
     private CodecFunctions() { }
 
     /**
-     * Standard java serialization codec function that works for any Serializable object.
+     * Standard java serialization function that works for any Serializable object.
      * Use for applications where serialization performance and footprint size is not of a major concern.
-     * To lower the footprint apply compression or better yet use {@link #binarySerializing(BiConsumer, Function)}
-     * function which yields much better performance and tiny footprint.
+     * To lower the footprint apply compression or better yet use binary serialization function which yields much
+     * better performance and smallest possible footprint.
      */
     public static <T extends Serializable> CodecFunction<T> javaSerializing(Class<T> clazz) {
         return new JavaSerializationCodecFunction<>(clazz);
@@ -91,7 +91,7 @@ public final class CodecFunctions {
      * @apiNote for a more generic use case of writing arbitrary length byte arrays use {@link #binary()} (int, boolean)}.
      */
     public static CodecFunction<byte[]> binaryChunked(int chunkSize, boolean strict) {
-        return new ChunkedBinaryCodecFunction(chunkSize, strict);
+        return new BinaryChunkedCodecFunction(chunkSize, strict);
     }
 
     /**

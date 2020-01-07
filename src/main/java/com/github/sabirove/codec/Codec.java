@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Sabirov Evgenii (sabirov.e@gmail.com)
+ * Copyright 2020 Sabirov Evgenii (sabirov.e@gmail.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,44 +16,42 @@
 
 package com.github.sabirove.codec;
 
-import com.github.sabirove.codec.filter.CodecBufferSpec;
-import com.github.sabirove.codec.filter.CodecFilter;
-import com.github.sabirove.codec.filter.CodecFilters;
 import com.github.sabirove.codec.function.CodecFunction;
-import com.github.sabirove.codec.util.StrictInputStream;
 
 import java.io.*;
-
-import static com.github.sabirove.codec.util.CodecUtil.checkNotNull;
-import static com.github.sabirove.codec.util.CodecUtil.throwUnchecked;
 
 /**
  * Bidirectional IO function suitable to encode/decode single values and streams of values
  * of the specific type operating on top of the {@link java.io} streams.
  *
  * @param <T> target value type
- * @apiNote use {@link #withFunction(CodecFunction)} builder to build an instance.
+ * @apiNote use {@link CodecBuilder#withFunction(CodecFunction)} builder to build an instance.
  */
-@SuppressWarnings("resource")
-public final class Codec<T> {
-    private final CodecFunction<T> function;
-    private final CodecFilter filter;
+public interface Codec<T> {
 
-    private Codec(CodecFunction<T> function, CodecFilter filter) {
-        this.function = function;
-        this.filter = filter;
-    }
-
-    /*
-     * Single value oriented API
+    /**
+     * Wrap the provided {@link OutputStream} to write the stream of values encoded by this codec.
+     *
+     * @throws UncheckedIOException wrapping the original {@link IOException} when wrap operation fails
+     * @implNote shouldn't close the underlying stream
      */
+    EncoderStream<T> wrap(OutputStream os);
+
+    /**
+     * Wrap the provided {@link InputStream} to decode the stream of values previously encoded by this codec.
+     *
+     * @throws UncheckedIOException wrapping the original {@link IOException} when wrap operation fails
+     * @implNote shouldn't close the underlying stream
+     */
+    DecoderStream<T> wrap(InputStream is);
 
     /**
      * Encode single value to bytes.
      *
      * @throws UncheckedIOException wrapping the original {@link IOException} when IO operation fails
      */
-    public byte[] encode(T value) {
+    default byte[] encode(T value) {
+        @SuppressWarnings("resource")
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         wrap(bos).writeAndClose(value);
         return bos.toByteArray();
@@ -65,112 +63,9 @@ public final class Codec<T> {
      * @param in bytes containing the value previously encoded by this codec
      * @throws UncheckedIOException wrapping the original {@link IOException} when IO operation fails
      */
-    public T decode(byte[] in) {
+    default T decode(byte[] in) {
+        @SuppressWarnings("resource")
         ByteArrayInputStream bais = new ByteArrayInputStream(in);
         return wrap(bais).readAndClose();
-    }
-
-    /*
-     * Stream oriented API
-     */
-
-    /**
-     * Wrap the provided {@link OutputStream} to write the stream of values encoded by this codec.
-     *
-     * @throws UncheckedIOException wrapping the original {@link IOException} when wrap operation fails
-     * @implNote shouldn't close the underlying stream
-     */
-    public EncoderStream<T> wrap(OutputStream os) {
-        try {
-            OutputStream filtered = filter.filter(os);
-            return new EncoderStream<>(filtered, function);
-        } catch (IOException e) {
-            return throwUnchecked(e);
-        }
-    }
-
-    /**
-     * Wrap the provided {@link InputStream} to decode the stream of values previously encoded by this codec.
-     *
-     * @throws UncheckedIOException wrapping the original {@link IOException} when wrap operation fails
-     * @implNote shouldn't close the underlying stream
-     */
-    public DecoderStream<T> wrap(InputStream is) {
-        try {
-            InputStream filtered = filter.filter(is);
-            InputStream filteredStrict = StrictInputStream.wrap(filtered);
-            return new DecoderStream<>(filteredStrict, function);
-        } catch (IOException e) {
-            return throwUnchecked(e);
-        }
-    }
-
-    /*
-     * Builder API
-     */
-
-    /**
-     * Build the codec instance starting with the provided {@link CodecFunction}.
-     */
-    public static <T> Builder<T> withFunction(CodecFunction<T> function) {
-        return new Builder<>(function);
-    }
-
-    public static final class Builder<T> {
-        private final CodecFunction<T> function;
-        private CodecFilter filter = CodecFilters.noOp();
-        private CodecBufferSpec bufferSpec = CodecBufferSpec.ofDefaultSize();
-
-        private Builder(CodecFunction<T> function) {
-            this.function = checkNotNull(function);
-        }
-
-        /**
-         * Specify the codec filter to apply when doing IO with this codec.
-         *
-         * @apiNote <ul>
-         * <li>do not use {@link CodecBufferSpec} as plain codec filter</li>
-         * <li>use {@link #withFilterChain(CodecFilter...)} to add more than one filter. Alternatively,
-         * a filter composed with {@link CodecFilter#chain(CodecFilter...)} could be provided.</li>
-         * </ul>
-         */
-        public Builder<T> withFilter(CodecFilter filter) {
-            this.filter = checkNotNull(filter);
-            return this;
-        }
-
-        /**
-         * Specify the codec filter chain (filters applied consequently) to apply
-         * when doing IO with this codec.
-         *
-         * @apiNote do not use {@link CodecBufferSpec} as part of the filter chain.
-         */
-        public Builder<T> withFilterChain(CodecFilter... chain) {
-            for (CodecFilter codecFilter : checkNotNull(chain)) {
-                checkNotNull(codecFilter);
-            }
-            return withFilter(CodecFilter.chain(chain));
-        }
-
-        /**
-         * Specify the buffering strategy to apply when doing IO with this codec.
-         */
-        public Builder<T> withBuffer(CodecBufferSpec bufferSpec) {
-            this.bufferSpec = checkNotNull(bufferSpec);
-            return this;
-        }
-
-        /**
-         * Do not apply buffering when doing IO with this codec.
-         */
-        public Builder<T> withNoBuffer() {
-            this.bufferSpec = CodecBufferSpec.noBuffer();
-            return this;
-        }
-
-        public Codec<T> build() {
-            CodecFilter chain = bufferSpec == CodecBufferSpec.noBuffer() ? filter : filter.chain(bufferSpec);
-            return new Codec<>(function, chain);
-        }
     }
 }

@@ -46,11 +46,6 @@ final class BinaryChunkedCodecFunctionTest extends CodecFunctionTestCase<byte[]>
         return bytes;
     }
 
-    @Override
-    protected boolean cmp(byte[] t1, byte[] t2) {
-        return Arrays.equals(t1, t2);
-    }
-
     @RepeatedTest(100)
     void testStrict() throws IOException {
         CodecFunction<byte[]> function = CodecFunctions.binaryChunked(CHUNK_SIZE, true);

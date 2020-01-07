@@ -16,8 +16,6 @@
 
 package com.github.sabirove.codec.function;
 
-import java.util.Arrays;
-
 import com.github.sabirove.codec.test_util.Rnd;
 
 final class BinaryCodecFunctionTest extends CodecFunctionTestCase<byte[]> {
@@ -32,8 +30,4 @@ final class BinaryCodecFunctionTest extends CodecFunctionTestCase<byte[]> {
         return Rnd.rndBytes(4096);
     }
 
-    @Override
-    protected boolean cmp(byte[] t1, byte[] t2) {
-        return Arrays.equals(t1, t2);
-    }
 }

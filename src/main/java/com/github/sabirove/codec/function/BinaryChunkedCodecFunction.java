@@ -21,11 +21,11 @@ import java.util.Arrays;
 
 import com.github.sabirove.codec.util.CodecUtil;
 
-final class ChunkedBinaryCodecFunction extends CodecFunction<byte[]> {
+final class BinaryChunkedCodecFunction extends CodecFunction<byte[]> {
     private final int chunkSize;
     private final boolean strict;
 
-    ChunkedBinaryCodecFunction(int chunkSize, boolean strict) {
+    BinaryChunkedCodecFunction(int chunkSize, boolean strict) {
         CodecUtil.checkArgument(chunkSize > 0, "chunkSize should be positive");
         this.chunkSize = chunkSize;
         this.strict = strict;

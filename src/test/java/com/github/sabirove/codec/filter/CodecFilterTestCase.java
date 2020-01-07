@@ -19,7 +19,7 @@ package com.github.sabirove.codec.filter;
 import com.github.sabirove.codec.test_util.Rnd;
 import com.github.sabirove.codec.test_util.TestInputStream;
 import com.github.sabirove.codec.test_util.TestOutputStream;
-import com.github.sabirove.codec.util.StrictInputStream;
+import com.github.sabirove.codec.util.SafeInputStream;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.junit.jupiter.api.RepeatedTest;
 
@@ -69,7 +69,7 @@ abstract class CodecFilterTestCase {
 
         //wrap to StrictInputStream, b.c. there're some "framed" InputStreams used (like InflateInputStream)
         //that will may fail to read all data at once with plain read(byte[]) call
-        int read = new StrictInputStream(filteredTis).read(decoded);
+        int read = new SafeInputStream(filteredTis).read(decoded);
         assertEquals(input.length, read);
         assertArrayEquals(input, decoded);
 

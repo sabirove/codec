@@ -18,6 +18,8 @@ package com.github.sabirove.codec.filter;
 
 import com.github.sabirove.codec.util.base64.Base64InputStream;
 
+import javax.crypto.CipherInputStream;
+import javax.crypto.CipherOutputStream;
 import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.util.Base64;
@@ -115,11 +117,23 @@ public final class CodecFilters {
     }
 
     /**
-     * AES-based encryption codec filter with the following specs: <br>
-     * - Galois/Counter transformation mode (AES/GCM/NoPadding) <br>
-     * - 128 bit secret key <br>
-     * - 96 bit initialization vector <br>
-     * - 128 bit authentication tag <br>
+     * <p>Encryption filter based on a solid AES encryption method with data integrity validation and cryptographically
+     * strong random number generators.</p>
+     * <br>
+     * <p>Specs:</p>
+     * <ul>
+     * <li>Galois/Counter transformation mode (AES/GCM/NoPadding): streaming AES with data integrity validation</li>
+     * <li>128 bit secret key: optimal key length</li>
+     * <li>96 bit initialization vector (salt): optimal length, random value is generated per each encryption</li>
+     * <li>128 bit authentication tag</li>
+     * </ul>
+     *
+     * Limitations: <br>
+     * When using this filter authentication tag is computed on the whole stream and is flushed at the very end
+     * when the underlying {@link CipherOutputStream} is closed.
+     * Thus in order to validate the tag the whole encoded payload should be fully read back (decoded)
+     * and then the input stream should be closed triggering the underlying {@link CipherInputStream} to read
+     * and validate the tag from whatever leftover bytes in the stream.
      *
      * @param key 128 bit encryption key (array must be 16 bytes long)
      */

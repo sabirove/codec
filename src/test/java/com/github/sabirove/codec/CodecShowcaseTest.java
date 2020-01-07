@@ -57,7 +57,7 @@ class CodecShowcaseTest {
     @Test
     void testCodec() {
         final Codec<Person> personCodec =
-                Codec.withFunction(CodecFunctions.javaSerializing(Person.class))
+                CodecBuilder.withFunction(CodecFunctions.javaSerializing(Person.class))
                         .withBuffer(CodecBufferSpec.ofDefaultSize())
                         .withFilterChain(
                                 CodecFilters.compressWithGzip(),

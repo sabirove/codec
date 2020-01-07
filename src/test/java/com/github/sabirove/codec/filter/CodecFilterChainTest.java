@@ -17,7 +17,7 @@
 package com.github.sabirove.codec.filter;
 
 import com.github.sabirove.codec.test_util.RndCodec;
-import com.github.sabirove.codec.util.StrictInputStream;
+import com.github.sabirove.codec.util.SafeInputStream;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.junit.jupiter.api.RepeatedTest;
 
@@ -58,7 +58,7 @@ class CodecFilterChainTest {
                 byte[] actual = new byte[expected.length];
                 //wrap to StrictInputStream, b.c. there're some "framed" InputStreams used (like InflateInputStream)
                 //that will may fail to read all data at once with plain read(byte[]) call
-                int read = new StrictInputStream(filtered).read(actual);
+                int read = new SafeInputStream(filtered).read(actual);
                 assertEquals(expected.length, read);
                 assertArrayEquals(expected, actual);
             }

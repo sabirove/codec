@@ -17,7 +17,7 @@
 package com.github.sabirove.codec.filter;
 
 
-import com.github.sabirove.codec.Codec;
+import com.github.sabirove.codec.CodecBuilder;
 
 import java.io.*;
 import java.util.Set;
@@ -31,7 +31,7 @@ import static com.github.sabirove.codec.util.CodecUtil.checkState;
  * Specialized {@link CodecFilter} implementation used as a strategy to apply buffering
  * on top of the inbound/outbound IO streams.
  *
- * @apiNote intended to be used only as part of the {@link Codec.Builder} API.
+ * @apiNote intended to be used only as part of the {@link CodecBuilder} API.
  */
 public final class CodecBufferSpec extends CodecFilter {
     private static final Set<Class<? extends OutputStream>> DEFAULT_EXCLUDED_OUTPUT_TYPES = Stream.of(

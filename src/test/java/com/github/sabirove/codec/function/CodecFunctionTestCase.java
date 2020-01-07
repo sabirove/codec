@@ -37,10 +37,6 @@ abstract class CodecFunctionTestCase<T> {
 
     abstract T generateInput();
 
-    protected boolean cmp(T t1, T t2) {
-        return t1.equals(t2);
-    }
-
     @RepeatedTest(100)
     final void runTest() throws IOException {
         CodecFunction<T> function = getFunction();
@@ -58,7 +54,7 @@ abstract class CodecFunctionTestCase<T> {
         for (T expected : inputs) {
             T actual = function.read(tis);
             tis.assertNotClosed();
-            assertTrue(cmp(expected, actual), "expected not equal to actual");
+            TestUtil.assertEq(expected, actual);
         }
         tis.assertEOF();
 

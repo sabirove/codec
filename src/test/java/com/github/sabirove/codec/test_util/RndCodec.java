@@ -17,13 +17,13 @@
 package com.github.sabirove.codec.test_util;
 
 import com.github.sabirove.codec.Codec;
+import com.github.sabirove.codec.CodecBuilder;
 import com.github.sabirove.codec.filter.CodecBufferSpec;
 import com.github.sabirove.codec.filter.CodecFilter;
 import com.github.sabirove.codec.filter.CodecFilters;
 import com.github.sabirove.codec.function.CodecFunctions;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -79,7 +79,7 @@ public class RndCodec {
         FuncAndGen<T> funcAndGen = rndCodecFunctionAndGen();
         CodecBufferSpec rndBufferSpec = rndElem(BUFFER_SPECS_VARIETY).get();
         CodecFilter rndFilterChain = rndFilterChain();
-        Codec<T> rndCodec = Codec.withFunction(funcAndGen.func)
+        Codec<T> rndCodec = CodecBuilder.withFunction(funcAndGen.func)
                 .withBuffer(rndBufferSpec)
                 .withFilter(rndFilterChain)
                 .build();

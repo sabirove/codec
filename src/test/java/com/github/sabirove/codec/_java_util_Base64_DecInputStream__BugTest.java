@@ -62,7 +62,7 @@ class _java_util_Base64_DecInputStream__BugTest {
                 Base64.getEncoder()::wrap,
                 base64Decoder
         );
-        return Codec.withFunction(CodecFunctions.binary())
+        return CodecBuilder.withFunction(CodecFunctions.binary())
                 .withNoBuffer()
                 .withFilterChain(
                         CodecFilters.encryptWithAes(), //trips with javax.crypto.AEADBadTagException if different array is read
