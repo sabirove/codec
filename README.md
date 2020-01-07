@@ -185,8 +185,8 @@ Obtain with: `CodecFunctions.javaSerializing(..)` providing the target `Class`.
 
 ##### Binary serialization function 
 Ad-hoc binary serialization function based on a pair of custom `java.io` stream wrappers
-[StateInputBuffer](src/main/java/com.github.sabirove/codec/util/StateInputStream.java) /
-[StateOutputBuffer](src/main/java/com.github.sabirove/codec/util/StateOutputStream.java) providing convenient API
+[StateInputStream](src/main/java/com.github.sabirove/codec/util/StateInputStream.java) /
+[StateOutputStream](src/main/java/com.github.sabirove/codec/util/StateOutputStream.java) providing convenient API
 to read and write most of the standard Java types including collections, maps, arrays, strings, enums and then some.  
 Supports IO with LEB128 variable-length encoded `int` and `long` values: unsigned variable-length
 ints are used to serialize enum ordinals and length values for contiguous data types (e.g. collections, arrays)

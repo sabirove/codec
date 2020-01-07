@@ -47,18 +47,19 @@ public final class CodecFunctions {
     }
 
     /**
-     * Ad-hoc binary codec function with IO based on the pair of complementing
-     * {@link StateOutputStream}/{@link StateInputStream} filters allowing to conveniently read/write most
-     * of the standard java types.
-     * Uses variable length encoding to write contiguous data length values as well as enum ordinals
-     * allowing to yield small output footprint. <br>
-     * <br> Limitations: <br>
+     * Ad-hoc binary serialization function based on a pair of custom {@code java.io} stream wrappers
+     * {@link StateInputStream}/{@link StateOutputStream} providing convenient API to read and write
+     * most of the standard Java types including collections, maps, arrays, strings, enums and then some.
+     * <p>Supports IO with LEB128 variable-length encoded `int` and `long` values: unsigned variable-length
+     * ints are used to serialize enum ordinals and length values for contiguous data types (e.g. collections, arrays)
+     * helping to yield tiny serialization footprint.</p>
+     * <br>
+     * <p>Limitations:
      * <ol>
-     *      <li>reading and writing of the fields should be carried out in the exact same order.</li>
-     *      <li>writing null values is prohibited.</li>
-     *      <li>no type information is stored and validated whatsoever.</li>
+     *   <li>writing and reading of the fields should be carried out in the exact same order</li>
+     *   <li>null values are not supported</li>
+     *   <li>no type information is stored and validated whatsoever</li>
      * </ol>
-     *
      * @param writer function to write the arbitrary {@code state} to the supplied input buffer
      * @param reader function to read the written {@code state} from the supplied output buffer
      */

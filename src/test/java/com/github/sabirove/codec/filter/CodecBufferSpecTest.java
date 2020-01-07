@@ -16,7 +16,7 @@
 
 package com.github.sabirove.codec.filter;
 
-import org.graalvm.compiler.options.SuppressFBWarnings;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.junit.jupiter.api.Test;
 
 import java.io.BufferedInputStream;
