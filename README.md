@@ -96,8 +96,8 @@ function working against `java.io` streams to write and read back target `<T>` v
     public abstract void write(T value, OutputStream out) throws IOException;
     public abstract T read(InputStream in) throws IOException;
 ```
-The number of predefined implementations can be obtained with 
-[CodecFunctions](src/main/java/com/github/sabirove/codec/function/CodecFunctions.java) factory, they are:
+ [CodecFunctions](src/main/java/com/github/sabirove/codec/function/CodecFunctions.java) factory can be used 
+ to obtain a number of out of the box implementations:
 - `CodecFunctions.javaSerializing(..)`: IO on pojo types with standard java serialization (works for any `Serializable` type)
 - `CodecFunctions.binarySerializing(..)`: IO on pojo types with ad-hoc binary serialization
 - `CodecFunctions.binary(..)`: IO on plain byte arrays of arbitrary size
@@ -123,8 +123,8 @@ filtering scheme:
 - Encode: `... -> CodecFilter1 -> CodecFilter2 -> outbound OutputStream`
 - Decode: `... <- CodecFilter1 <- CodecFilter2 <- inbound InputStream`
 
-The number of predefined `CodecFilter` implementations can be obtained with 
-[CodecFilters](src/main/java/com/github/sabirove/codec/filter/CodecFilters.java) factory, they are:
+[CodecFilters](src/main/java/com/github/sabirove/codec/filter/CodecFilters.java) factory can be used 
+to obtain a number of out of the box implementations:
 - `CodecFilters.compressWithDeflate()`: apply `Deflate` compress/decompress
 - `CodecFilters.compressWithGzip()`: apply `Gzip` compress/decompress
 - `CodecFilters.encodeWithBase64()`: apply `Base64` encode/decode
@@ -137,9 +137,9 @@ The number of predefined `CodecFilter` implementations can be obtained with
 IO buffering is handled with [CodecBufferSpec](src/main/java/com/github/sabirove/codec/filter/CodecBufferSpec.java) 
 which is a special kind of `CodecFilter` placed on the *outer edge* of the filter chain to apply
 `BufferedInputStream/BufferedOutputStream` wrappers on top of the inbound/outbound streams.  
-Obtain with factory `CodecBufferSpec.ofSize(..)` specifying the input/output buffer sizes in bytes or opt in for the
-default sized one with `CodecBufferSpec.ofDefaultSize()`.  
-Certain types of `Input/Output -Stream` types can be excluded by means of `withXXXStreamExclusions(..)` 
+Obtain with `CodecBufferSpec.ofSize(..)` specifying the buffer sizes in bytes or opt in for the
+default sized one using `CodecBufferSpec.ofDefaultSize()`.  
+Certain types of `java.io` streams can be excluded by means of `withXXXStreamExclusions(..)` 
 or `addXXXStreamExclusions(..)` instance calls.
 
 #### API
@@ -155,12 +155,12 @@ the extra object allocations per single operation: use stream-oriented API for s
 ```
 
 ##### Operating on streams of values
-Main API useful when dealing with large quantities of values.
+Based around `java.io` streams and is useful when dealing with large quantities of values.
 ```java
     public EncoderStream<T> wrap(OutputStream os);
     public DecoderStream<T> wrap(InputStream is);
 ```
-Where [EncoderStream](src/main/java/com/github/sabirove/codec/EncoderStream.java)/[DecoderStream](src/main/java/com/github/sabirove/codec/DecoderStream.java) 
+[EncoderStream](src/main/java/com/github/sabirove/codec/EncoderStream.java)/[DecoderStream](src/main/java/com/github/sabirove/codec/DecoderStream.java) 
 are a pair of light `java.io` stream wrappers handling reads and writes:
 
 ```java
@@ -184,13 +184,13 @@ better performance and smallest possible footprint.
 Obtain with: `CodecFunctions.javaSerializing(..)` providing the target `Class`.
 
 ##### Binary serialization function 
-Ad-hoc binary serialization function based on a pair of custom `java.io` stream wrappers
+Ad-hoc binary serialization function comprised of a pair of custom `java.io` stream wrappers
 [StateInputStream](src/main/java/com/github/sabirove/codec/util/StateInputStream.java) /
 [StateOutputStream](src/main/java/com/github/sabirove/codec/util/StateOutputStream.java) featuring convenient API
 to read and write most of the standard Java types including collections, maps, arrays, strings and enums.  
-Supports LEB128 variable-length encoded `int` and `long` values. Implementation uses unsigned variable-length ints
-internally to serialize enum ordinals and length values for contiguous data types (e.g. collections, arrays)
-helping to yield tiny serialization footprint.
+Supports LEB128 variable-length encoded `int` and `long` values.  
+**Note**: unsigned variable-length ints are used internally to serialize enum ordinals and length values 
+for contiguous data types (e.g. collections, arrays) helping to yield tiny serialization footprint.
 
 Obtain with: `CodecFunctions.binarySerializing(..)` providing a pair of functions for reading and writing the 
 target type.   
@@ -205,7 +205,6 @@ E.g. such function implementation for aforementioned `Person` pojo would look li
 Limitations: 
   1. field reads and writes should be carried out in the exact same order
   2. null values are not supported
-  3. no type information is stored and validated whatsoever
 
 
 #### AES encryption filter
